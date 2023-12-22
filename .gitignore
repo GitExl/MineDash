@@ -1,6 +1,7 @@
 .vscode
 build/*
 x16emu
+box16
 *.o
 *.pyc
 .idea

@@ -30,6 +30,17 @@ typedef struct entity_t {
 extern entity_t entities;
 
 
+#define ENTITY_TYPE_MAX 16
+
+#define ETF_OWNERSHIP 0x01
+
+typedef struct entity_type_t {
+  unsigned char flags[ENTITY_TYPE_MAX];
+} entity_type_t;
+
+extern entity_type_t entity_types;
+
+
 // Maximum number of states.
 #define STATE_MAX 256
 

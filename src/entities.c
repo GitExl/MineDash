@@ -24,6 +24,9 @@ entity_t entities;
 // Entity states.
 entity_states_t entity_states;
 
+// Entity type information.
+entity_type_t entity_types;
+
 // Player entity index.
 unsigned char entity_player = 0;
 
@@ -38,8 +41,35 @@ static unsigned char type;
 static unsigned char state;
 static unsigned char counter;
 static unsigned int address;
+static unsigned int tile_index;
 
 static unsigned char ret_property_mask;
+
+unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y) {
+
+  // Find the first unused entity.
+  for (i = next_unused; i < ENTITY_MAX; i++) {
+    if (entities.flags[i] & ENTITYF_UNUSED) {
+      break;
+    }
+  }
+
+  entities.type[i] = type;
+  entities.flags[i] = 0;
+  entities.p_x[i] = 0;
+  entities.p_y[i] = 0;
+  entities.tile_x[i] = tile_x;
+  entities.tile_y[i] = tile_y;
+
+  entities_init_entity(i, type);
+
+  if (entity_types.flags[type] & ETF_OWNERSHIP) {
+    tile_index = TILE_INDEX(tile_x, tile_y);
+    level_owner[tile_index] = i;
+  }
+
+  return i;
+}
 
 void entities_free(const unsigned char index) {
 
@@ -51,6 +81,11 @@ void entities_free(const unsigned char index) {
   entities.flags[index] |= ENTITYF_UNUSED;
   if (index < next_unused) {
     next_unused = index;
+  }
+
+  if (entity_types.flags[type] & ETF_OWNERSHIP) {
+    tile_index = TILE_INDEX(entities.tile_x[index], entities.tile_y[index]);
+    level_owner[tile_index] = 0xFF;
   }
 }
 
@@ -65,6 +100,8 @@ void entities_update_vera_sam() {
 
     vera_x = (entities.tile_x[i] << 4) + entities.p_x[i] - camerax;
     vera_y = (entities.tile_y[i] << 4) + entities.p_y[i] - cameray;
+    // vera_x = (entities.tile_x[i] << 4) - camerax;
+    // vera_y = (entities.tile_y[i] << 4) - cameray;
 
     // Only update coordinates, skip 2 bytes of address.
     address = 0xFC02 + i * 8;
@@ -124,35 +161,30 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y) {
   static unsigned char tile_x;
   static unsigned char tile_y;
-  static signed char x;
-  static signed char y;
   static unsigned int tile_index;
+
+  static unsigned char dest_tile_x;
+  static unsigned char dest_tile_y;
+  static unsigned int dest_tile_index;
+
   static unsigned char tile_flags;
   static unsigned char digger;
 
-  x = entities.p_x[entity];
-  y = entities.p_y[entity];
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
 
-  // Clear out current tile ownership.
-  tile_index = TILE_INDEX(tile_x, tile_y);
-  level_owner[tile_index] = 0;
-
-  // Move to new tile.
-  tile_x += move_x;
-  tile_y += move_y;
-  x = -(move_x << 4);
-  y = -(move_y << 4);
+  dest_tile_x = tile_x + move_x;
+  dest_tile_y = tile_y + move_y;
+  dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
 
   // Take ownership of new tile.
-  tile_index = TILE_INDEX(tile_x, tile_y);
-  level_owner[tile_index] = entity;
+  level_owner[dest_tile_index] = entity;
 
-  // Act on destination tile.
-  tile_flags = tileset.flags[level_tile[tile_index]];
+  // Dig at soft tiles.
+  tile_flags = tileset.flags[level_tile[dest_tile_index]];
   if (tile_flags & TILEF_SOFT) {
-    digger = entities_spawn(E_DIGGER, tile_x, tile_y);
+    digger = entities_spawn(E_DIGGER, dest_tile_x, dest_tile_y);
+    state = 0;
     if (move_x < 0) {
       state = ST_LVL_DIG_H;
     } else if (move_x > 0) {
@@ -164,17 +196,26 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
       state = ST_LVL_DIG_V;
       entities.flags[digger] = ENTITYF_FLIPY;
     }
-    entities_set_state(digger, state);
+    if (state) {
+      entities_set_state(digger, state);
+    }
 
+  // Handle special tiles.
   } else if (tile_flags & TILEF_SPECIAL) {
-    level_tile_special(tile_x, tile_y);
+    level_tile_special(dest_tile_x, dest_tile_y);
 
   }
 
-  entities.tile_x[entity] = tile_x;
-  entities.tile_y[entity] = tile_y;
-  entities.p_x[entity] = x;
-  entities.p_y[entity] = y;
+  // Move to new position.
+  entities.p_x[entity] = -(move_x << 4);
+  entities.p_y[entity] = -(move_y << 4);
+  entities.tile_x[entity] = dest_tile_x;
+  entities.tile_y[entity] = dest_tile_y;
+
+  // Clear out old tile ownership.
+  tile_index = TILE_INDEX(tile_x, tile_y);
+  level_owner[tile_index] = 0xFF;
+  level_tile_clear(tile_x, tile_y);
 }
 
 void entities_update() {
@@ -201,7 +242,7 @@ void entities_update() {
       }
     }
 
-    // Always move pixel position to 0,0.
+    // Always move pixel position towards 0,0.
     if (entities.p_x[i] < 0) {
       entities.p_x[i] += 2;
     } else if (entities.p_x[i] > 0) {
@@ -233,6 +274,12 @@ void entities_load(const char* entity_filename) {
   cbm_k_setlfs(0, 8, 2);
   cbm_k_load(0, (unsigned int)&entities);
 
+  // Configure entity types.
+  entity_types.flags[E_PLAYER] = ETF_OWNERSHIP;
+  entity_types.flags[E_GOLD] = ETF_OWNERSHIP;
+  entity_types.flags[E_DIAMOND] = ETF_OWNERSHIP;
+  entity_types.flags[E_ROCK] = ETF_OWNERSHIP;
+
   for (i = 0; i < ENTITY_MAX; i++) {
     flags = entities.flags[i];
     if (flags & ENTITYF_UNUSED) {
@@ -241,27 +288,6 @@ void entities_load(const char* entity_filename) {
 
     entities_init_entity(i, entities.type[i]);
   }
-}
-
-unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y) {
-
-  // Find the first unused entity.
-  for (i = next_unused; i < ENTITY_MAX; i++) {
-    if (entities.flags[i] & ENTITYF_UNUSED) {
-      break;
-    }
-  }
-
-  entities.type[i] = type;
-  entities.flags[i] = 0;
-  entities.p_x[i] = 0;
-  entities.p_y[i] = 0;
-  entities.tile_x[i] = tile_x;
-  entities.tile_y[i] = tile_y;
-
-  entities_init_entity(i, type);
-
-  return i;
 }
 
 void entities_init_entity(const char index, const char type) {

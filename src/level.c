@@ -30,10 +30,10 @@ unsigned char level_next = 0;
 level_info_t level_info;
 
 // Level tile indices.
-unsigned char level_tile[4096];
+unsigned char level_tile[64 * 64];
 
 // Level tile entity ownership.
-unsigned char level_owner[4096];
+unsigned char level_owner[64 * 64];
 
 // Player entity index.
 extern unsigned char entity_player;
@@ -100,7 +100,7 @@ void level_load(const unsigned char level) {
   cbm_k_setlfs(0, 8, 2);
   cbm_k_load(2, 0x8000);
 
-  // Load level metadata, max 256.
+  // Load level metadata.
   filename[7] = 'd';
   filename[8] = 'a';
   filename[9] = 't';
@@ -118,12 +118,14 @@ void level_load(const unsigned char level) {
   VERA.layer0.tilebase = 0x30 | 0b11;
 
   // Copy VERA level tiles to system RAM.
+  // Also clear entity ownership.
   VERA.address = 0x8000;
   VERA.address_hi = VERA_INC_2;
   tile_index = 0;
   for (i = 0; i < 64; i++) {
     for (j = 0; j < 64; j++) {
       level_tile[tile_index++] = VERA.data0;
+      level_owner[tile_index] = 0xFF;
     }
   }
 
@@ -140,7 +142,8 @@ void level_load(const unsigned char level) {
 
     // Set tile ownership.
     if (!(flags & ENTITYF_NO_OWNER)) {
-      level_owner[TILE_INDEX(entities.tile_x[i], entities.tile_x[i])] = i;
+      tile_index = TILE_INDEX(entities.tile_x[i], entities.tile_x[i]);
+      level_owner[tile_index] = i;
     }
 
     // Track player entity index.
@@ -151,23 +154,18 @@ void level_load(const unsigned char level) {
 }
 
 void level_load_graphics() {
-
-  // Level sprites, max 16k
   cbm_k_setnam("lvl.spr");
   cbm_k_setlfs(0, 8, 1);
   cbm_k_load(2, 0);
 
-  // Level sprites metadata, max 512
   cbm_k_setnam("lvl.sprdat");
   cbm_k_setlfs(0, 8, 2);
   cbm_k_load(0, (unsigned int)&sprites);
 
-  // Level tiles, max 8k
   cbm_k_setnam("lvl.til");
   cbm_k_setlfs(0, 8, 1);
   cbm_k_load(2, 0);
 
-  // Level tiles metadata, 256
   cbm_k_setnam("lvl.tildat");
   cbm_k_setlfs(0, 8, 2);
   cbm_k_load(0, (unsigned int)&tileset);
@@ -211,7 +209,7 @@ unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned c
     return 1;
   }
 
-  if (level_owner[tile_index]) {
+  if (level_owner[tile_index] != 0xFF) {
     return 1;
   }
 
@@ -231,37 +229,47 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
   // Fall down.
   if (gravity_flags & GF_ABOVE) {
     tile_index = TILE_INDEX(tile_x, tile_y + 1);
-    if (!level_tile[tile_index] && !level_owner[tile_index]) {
+    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
       entity = entities_spawn(E_ROCK, tile_x, tile_y);
       entities.data[entity] = ROCK_STATE_DOWN;
       entities_tile_move(entity, 0, 1);
-      level_tile_clear(tile_x, tile_y);
 
       return 0;
     }
   }
 
-  // // Slide to right.
-  // if (gravity_flags & GF_LEFT) {
-  //   tile_index = TILE_INDEX(tile_x + 1, tile_y);
-  //   if (!level_tile[tile_index] && !level_owner[tile_index]) {
-  //     tile_index = TILE_INDEX(tile_x + 1, tile_y + 1);
-  //     if (!level_tile[tile_index] && !level_owner[tile_index]) {
-  //       return 0;
-  //     }
-  //   }
-  // }
+  // Slide to right.
+  if (gravity_flags & GF_LEFT) {
+    tile_index = TILE_INDEX(tile_x + 1, tile_y);
+    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+      tile_index = TILE_INDEX(tile_x + 1, tile_y + 1);
+      if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+        entity = entities_spawn(E_ROCK, tile_x, tile_y);
+        entities.data[entity] = ROCK_STATE_RIGHT;
+        entities_set_state(entity, ST_LVL_ROCK_ROLL);
+        entities_tile_move(entity, 1, 0);
 
-  // // Slide to left.
-  // if (gravity_flags & GF_RIGHT) {
-  //   tile_index = TILE_INDEX(tile_x - 1, tile_y);
-  //   if (!level_tile[tile_index] && !level_owner[tile_index]) {
-  //     tile_index = TILE_INDEX(tile_x - 1, tile_y + 1);
-  //     if (!level_tile[tile_index] && !level_owner[tile_index]) {
-  //       return 0;
-  //     }
-  //   }
-  // }
+        return 0;
+      }
+    }
+  }
+
+  // Slide to left.
+  if (gravity_flags & GF_RIGHT) {
+    tile_index = TILE_INDEX(tile_x - 1, tile_y);
+    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+      tile_index = TILE_INDEX(tile_x - 1, tile_y + 1);
+      if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+        entity = entities_spawn(E_ROCK, tile_x, tile_y);
+        entities.data[entity] = ROCK_STATE_RIGHT;
+        entities.flags[entity] = ENTITYF_FLIPX;
+        entities_set_state(entity, ST_LVL_ROCK_ROLL);
+        entities_tile_move(entity, -1, 0);
+
+        return 0;
+      }
+    }
+  }
 
   // Indicates that this tile was affected by gravity.
   return 1;
@@ -284,8 +292,8 @@ void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) 
       }
       level_hud_update = 1;
 
-      entities_set_state(entities_spawn(E_GOLD, tile_x, tile_y), ST_LVL_GOLD_TAKE);
       level_tile_clear(tile_x, tile_y);
+      entities_set_state(entities_spawn(E_GOLD, tile_x, tile_y), ST_LVL_GOLD_TAKE);
       break;
 
     // Diamond.
@@ -299,8 +307,8 @@ void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) 
       }
       level_hud_update = 1;
 
-      entities_set_state(entities_spawn(E_DIAMOND, tile_x, tile_y), ST_LVL_DIAM_TAKE);
       level_tile_clear(tile_x, tile_y);
+      entities_set_state(entities_spawn(E_DIAMOND, tile_x, tile_y), ST_LVL_DIAM_TAKE);
       break;
   }
 }
