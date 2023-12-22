@@ -1,0 +1,253 @@
+{
+  "destination": "build",
+  "src": "src",
+
+  "palettes": {
+    "MAIN": {
+      "file": "palette.png"
+    }
+  },
+
+  "tilesets": {
+    "TEXT": {
+      "file": "charset.png",
+      "size": 8,
+      "bpp": 1,
+      "address": "0x1F000"
+    },
+    "LVL": {
+      "file": "tiles.png",
+      "size": 16,
+      "palette": "MAIN",
+      "bpp": 4,
+      "metadata": "level.tsj",
+      "address": "0x06000"
+    }
+  },
+
+  "tilemaps": {
+    "LVL000": {
+      "file": "lvl000.tmj",
+      "tileset": "LVL",
+      "title": "Getting Started"
+    },
+    "LVL001": {
+      "file": "lvl001.tmj",
+      "tileset": "LVL",
+      "title": "Funnel"
+    }
+  },
+
+  "entities": {
+    "Player": 0,
+    "Rock": 1,
+    "Gold": 2,
+    "Diamond": 3,
+    "Explode": 4,
+    "Dynamite": 5,
+    "Digger": 6,
+    "Exit": 7
+  },
+
+  "sprite_groups": {
+    "LVL": {
+      "address": "0x02000"
+    }
+  },
+
+  "states": {
+    "LVL": {
+      "file": "lvl_states.json",
+      "sprite_group": "LVL"
+    }
+  },
+
+  "sprites": {
+    "PL_DOWN": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 0,
+      "count": 8,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_UP": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 16,
+      "count": 8,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_RIGHT": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 32,
+      "count": 8,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_IDLE": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 48,
+      "count": 3,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_CRUSH": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 48,
+      "y": 48,
+      "count": 4,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_BURN": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 80,
+      "count": 8,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+    "PL_EXIT": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 176,
+      "count": 6,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "DIG_H": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 64,
+      "count": 4,
+      "palette": "MAIN",
+      "subpalette": 0,
+      "groups": ["LVL"]
+    },
+    "DIG_V": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 64,
+      "y": 64,
+      "count": 4,
+      "palette": "MAIN",
+      "subpalette": 0,
+      "groups": ["LVL"]
+    },
+
+    "EXPL": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 96,
+      "count": 7,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "ROCK": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 112,
+      "count": 4,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "TNT": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 64,
+      "y": 112,
+      "count": 3,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "GOLD": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 128,
+      "count": 3,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "DIAM": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 144,
+      "count": 3,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "SPARK": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 160,
+      "count": 8,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "SPARKS": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 176,
+      "count": 5,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    }
+  }
+}

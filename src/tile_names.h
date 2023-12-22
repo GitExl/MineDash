@@ -1,0 +1,43 @@
+// Auto-generated during build process.
+
+#ifndef TILE_NAMES_H
+#define TILE_NAMES_H
+
+#define T_LVL_NOTHING 0
+#define T_LVL_DIRT_TOPLEFT 1
+#define T_LVL_DIRT_TOP 2
+#define T_LVL_DIRT_TOPRIGHT 3
+#define T_LVL_STONE_TOPLEFT 4
+#define T_LVL_STONE_TOP 5
+#define T_LVL_STONE_TOPRIGHT 6
+#define T_LVL_LAVA1 7
+#define T_LVL_LAVA2 8
+#define T_LVL_ROCK 10
+#define T_LVL_DIRT_LEFT 11
+#define T_LVL_DIRT 12
+#define T_LVL_DIRT_RIGHT 13
+#define T_LVL_STONE_LEFT 14
+#define T_LVL_STONE 15
+#define T_LVL_STONE_RIGHT 16
+#define T_LVL_LAVA3 17
+#define T_LVL_LAVA4 18
+#define T_LVL_MARBLE 20
+#define T_LVL_DIRT_BOTTOMLEFT 21
+#define T_LVL_DIRT_BOTTOM 22
+#define T_LVL_DIRT_BOTTOMRIGHT 23
+#define T_LVL_STONE_BOTTOMRIGHT 26
+#define T_LVL_STONE_BOTTOM 25
+#define T_LVL_DIRT_CAPTOP 30
+#define T_LVL_DIRT_VERTICAL 31
+#define T_LVL_DIRT_HORIZONTAL 32
+#define T_LVL_DIRT_MID 33
+#define T_LVL_EXIT_OPEN 34
+#define T_LVL_EXIT_CLOSED 35
+#define T_LVL_DYNAMITE 36
+#define T_LVL_GOLD 37
+#define T_LVL_DIAMOND 38
+#define T_LVL_DIRT_CAPBOTTOM 40
+#define T_LVL_DIRT_CAPLEFT 41
+#define T_LVL_DIRT_CAPRIGHT 42
+
+#endif

@@ -1,0 +1,139 @@
+{
+  "PLAYER_UP": [
+    ["PL_UP_00", 3, 1, ""],
+    ["PL_UP_01", 3, 1, ""],
+    ["PL_UP_02", 3, 1, ""],
+    ["PL_UP_03", 3, 1, ""],
+    ["PL_UP_04", 3, 1, ""],
+    ["PL_UP_05", 3, 1, ""],
+    ["PL_UP_06", 3, 1, ""],
+    ["PL_UP_07", 3, -7, ""]
+  ],
+
+  "PLAYER_DOWN": [
+    ["PL_DOWN_00", 3, 1, ""],
+    ["PL_DOWN_01", 3, 1, ""],
+    ["PL_DOWN_02", 3, 1, ""],
+    ["PL_DOWN_03", 3, 1, ""],
+    ["PL_DOWN_04", 3, 1, ""],
+    ["PL_DOWN_05", 3, 1, ""],
+    ["PL_DOWN_06", 3, 1, ""],
+    ["PL_DOWN_07", 3, -7, ""]
+  ],
+
+  "PLAYER_RIGHT": [
+    ["PL_RIGHT_00", 3, 1, ""],
+    ["PL_RIGHT_01", 3, 1, ""],
+    ["PL_RIGHT_02", 3, 1, ""],
+    ["PL_RIGHT_03", 3, 1, ""],
+    ["PL_RIGHT_04", 3, 1, ""],
+    ["PL_RIGHT_05", 3, 1, ""],
+    ["PL_RIGHT_06", 3, 1, ""],
+    ["PL_RIGHT_07", 3, -7, ""]
+  ],
+
+  "PLAYER_TAP": [
+    ["PL_IDLE_00", 180, 1, "REPEAT_RANDOM"],
+    ["PL_IDLE_01", 24, 1, ""],
+    ["PL_IDLE_02", 24, -1, ""]
+  ],
+
+  "PLAYER_CRUSH": [
+    ["PL_CRUSH_00", 8, 1, ""],
+    ["PL_CRUSH_01", 8, 1, ""],
+    ["PL_CRUSH_02", 8, 1, ""],
+    ["PL_CRUSH_03", 0, 0, ""]
+  ],
+
+  "PLAYER_BURN": [
+    ["PL_BURN_00", 30, 1, ""],
+    ["PL_BURN_01", 8, 1, ""],
+    ["PL_BURN_00", 30, 1, "REPEAT_RANDOM"],
+    ["PL_BURN_01", 8, 1, ""],
+    ["PL_BURN_02", 8, 1, ""],
+    ["PL_BURN_03", 8, 1, ""],
+    ["PL_BURN_04", 8, 1, ""],
+    ["PL_BURN_05", 8, 1, ""],
+    ["PL_BURN_06", 90, 1, "REPEAT_RANDOM"],
+    ["PL_BURN_07", 8, -1, ""]
+  ],
+
+  "PLAYER_PUSH_RIGHT": [
+    ["PL_RIGHT_00", 32, 1, ""],
+    ["PL_RIGHT_00", 16, -1, ""]
+  ],
+
+  "PLAYER_EXIT": [
+    ["PL_EXIT_00", 6, 1, ""],
+    ["PL_EXIT_01", 6, 1, ""],
+    ["PL_EXIT_02", 6, 1, ""],
+    ["PL_EXIT_03", 6, 1, ""],
+    ["PL_EXIT_04", 6, 1, ""],
+    ["PL_EXIT_05", 6, 1, ""],
+    ["PL_EXIT_05", 60, 1, "INVISIBLE"],
+    ["PL_EXIT_05", 0, 0, "INVISIBLE"]
+  ],
+
+  "DIG_V": [
+    ["DIG_V_03", 2, 1, ""],
+    ["DIG_V_02", 2, 1, ""],
+    ["DIG_V_01", 2, 1, ""],
+    ["DIG_V_00", 2, 0, ""]
+  ],
+
+  "DIG_H": [
+    ["DIG_H_03", 2, 1, ""],
+    ["DIG_H_02", 2, 1, ""],
+    ["DIG_H_01", 2, 1, ""],
+    ["DIG_H_00", 2, 0, ""]
+  ],
+
+  "GOLD_TAKE": [
+    ["GOLD_00", 2, 1, ""],
+    ["GOLD_01", 2, 1, ""],
+    ["GOLD_02", 2, 0, ""]
+  ],
+
+  "DIAM_TAKE": [
+    ["DIAM_00", 2, 1, ""],
+    ["DIAM_01", 2, 1, ""],
+    ["DIAM_02", 2, 0, ""]
+  ],
+
+  "SPARK": [
+    ["SPARK_00", 12, 1, "REPEAT_RANDOM|INVISIBLE"],
+    ["SPARK_00", 12, 1, "REPEAT_RANDOM|INVISIBLE"],
+    ["SPARK_00", 4, 1, ""],
+    ["SPARK_01", 4, 1, ""],
+    ["SPARK_02", 4, 1, ""],
+    ["SPARK_03", 4, 1, ""],
+
+    ["SPARK_04", 12, 1, "REPEAT_RANDOM|INVISIBLE"],
+    ["SPARK_04", 12, 1, "REPEAT_RANDOM|INVISIBLE"],
+    ["SPARK_04", 4, 1, ""],
+    ["SPARK_05", 4, 1, ""],
+    ["SPARK_06", 4, 1, ""],
+    ["SPARK_07", 4, -11, ""]
+  ],
+
+  "EXPLODE": [
+    ["EXPL_00", 3, 1, ""],
+    ["EXPL_01", 3, 1, ""],
+    ["EXPL_02", 3, 1, ""],
+    ["EXPL_03", 3, 1, ""],
+    ["EXPL_04", 3, 1, ""],
+    ["EXPL_05", 3, 1, ""],
+    ["EXPL_06", 3, 0, ""]
+  ],
+
+  "ROCK": [
+    ["ROCK_00", 0, 0, ""]
+  ],
+
+  "ROCK_ROLL": [
+    ["ROCK_00", 8, 1, ""],
+    ["ROCK_01", 8, 1, ""],
+    ["ROCK_02", 8, 1, ""],
+    ["ROCK_03", 8, 0, ""]
+  ]
+}
