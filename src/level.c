@@ -219,8 +219,11 @@ unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned c
 unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
   static unsigned char entity;
 
-  tile_index = TILE_INDEX(tile_x, tile_y);
-  tile = level_tile[tile_index];
+  register unsigned char tile;
+  register unsigned int r_tile_index;
+
+  r_tile_index = TILE_INDEX(tile_x, tile_y);
+  tile = level_tile[r_tile_index];
   tile_flags = tileset.flags[tile];
   if (!(tile_flags & TILEF_GRAVITY)) {
     return 0;
@@ -228,8 +231,8 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
 
   // Fall down.
   if (gravity_flags & GF_ABOVE) {
-    tile_index = TILE_INDEX(tile_x, tile_y + 1);
-    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+    r_tile_index = TILE_INDEX(tile_x, tile_y + 1);
+    if (!level_tile[r_tile_index] && level_owner[r_tile_index] == 0xFF) {
       entity = entities_spawn(E_ROCK, tile_x, tile_y);
       entities.data[entity] = ROCK_STATE_DOWN;
       entities_tile_move(entity, 0, 1);
@@ -240,33 +243,47 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
 
   // Slide to right.
   if (gravity_flags & GF_LEFT) {
-    tile_index = TILE_INDEX(tile_x + 1, tile_y);
-    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
-      tile_index = TILE_INDEX(tile_x + 1, tile_y + 1);
-      if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
-        entity = entities_spawn(E_ROCK, tile_x, tile_y);
-        entities.data[entity] = ROCK_STATE_RIGHT;
-        entities_set_state(entity, ST_LVL_ROCK_ROLL);
-        entities_tile_move(entity, 1, 0);
 
-        return 0;
+    r_tile_index = TILE_INDEX(tile_x, tile_y + 1);
+    tile = level_tile[r_tile_index];
+    if (tileset.flags[tile] & TILEF_GRAVITY) {
+
+      r_tile_index = TILE_INDEX(tile_x + 1, tile_y);
+      if (!level_tile[r_tile_index] && level_owner[r_tile_index] == 0xFF) {
+
+        r_tile_index = TILE_INDEX(tile_x + 1, tile_y + 1);
+        if (!level_tile[r_tile_index] && level_owner[r_tile_index] == 0xFF) {
+          entity = entities_spawn(E_ROCK, tile_x, tile_y);
+          entities.data[entity] = ROCK_STATE_RIGHT;
+          entities_set_state(entity, ST_LVL_ROCK_ROLL);
+          entities_tile_move(entity, 1, 0);
+
+          return 0;
+        }
       }
     }
   }
 
   // Slide to left.
   if (gravity_flags & GF_RIGHT) {
-    tile_index = TILE_INDEX(tile_x - 1, tile_y);
-    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
-      tile_index = TILE_INDEX(tile_x - 1, tile_y + 1);
-      if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
-        entity = entities_spawn(E_ROCK, tile_x, tile_y);
-        entities.data[entity] = ROCK_STATE_RIGHT;
-        entities.flags[entity] = ENTITYF_FLIPX;
-        entities_set_state(entity, ST_LVL_ROCK_ROLL);
-        entities_tile_move(entity, -1, 0);
 
-        return 0;
+    r_tile_index = TILE_INDEX(tile_x, tile_y + 1);
+    tile = level_tile[r_tile_index];
+    if (tileset.flags[tile] & TILEF_GRAVITY) {
+
+      r_tile_index = TILE_INDEX(tile_x - 1, tile_y);
+      if (!level_tile[r_tile_index] && level_owner[r_tile_index] == 0xFF) {
+
+        r_tile_index = TILE_INDEX(tile_x - 1, tile_y + 1);
+        if (!level_tile[r_tile_index] && level_owner[r_tile_index] == 0xFF) {
+          entity = entities_spawn(E_ROCK, tile_x, tile_y);
+          entities.data[entity] = ROCK_STATE_RIGHT;
+          entities.flags[entity] = ENTITYF_FLIPX;
+          entities_set_state(entity, ST_LVL_ROCK_ROLL);
+          entities_tile_move(entity, -1, 0);
+
+          return 0;
+        }
       }
     }
   }

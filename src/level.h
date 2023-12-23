@@ -15,7 +15,7 @@
 #define GF_LEFT  0x02
 #define GF_RIGHT 0x04
 
-#define TILE_INDEX(x, y) (y << 6) + x
+#define TILE_INDEX(x, y) ((y & 0xFF) << 6) + (x & 0xFF)
 
 typedef struct level_info_t {
   unsigned int left;

@@ -2,7 +2,6 @@
 #include <cbm.h>
 #include <string.h>
 
-static unsigned char i;
 static unsigned char len;
 
 void text_load() {
@@ -21,7 +20,7 @@ void text_load() {
 }
 
 void text_clear() {
-  i = 240;
+  register unsigned char i = 240;
 
   VERA.address = 0xB000;
   VERA.address_hi = 0x01 | VERA_INC_1;
@@ -47,7 +46,7 @@ void text_clear() {
 }
 
 void text_hud_clear() {
-  i = 128;
+  register unsigned char i = 128;
 
   VERA.address = 0xBD00;
   VERA.address_hi = 0x01 | VERA_INC_1;
@@ -60,8 +59,7 @@ void text_hud_clear() {
     VERA.data0 = 0b11110010;
     VERA.data0 = 0x20;
     VERA.data0 = 0b11110010;
-    --i;
-  } while (i);
+  } while (--i);
 }
 
 void text_write(const unsigned char x, const unsigned char y, const unsigned char colors, char* str) {

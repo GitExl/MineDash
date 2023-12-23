@@ -33,7 +33,6 @@ unsigned char entity_player = 0;
 // The next (probably) unused entity index.
 unsigned char next_unused = 0;
 
-static unsigned char i;
 static int vera_x;
 static int vera_y;
 static unsigned char flags;
@@ -46,29 +45,30 @@ static unsigned int tile_index;
 static unsigned char ret_property_mask;
 
 unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y) {
+  register unsigned char j;
 
   // Find the first unused entity.
-  for (i = next_unused; i < ENTITY_MAX; i++) {
-    if (entities.flags[i] & ENTITYF_UNUSED) {
+  for (j = next_unused; j < ENTITY_MAX; j++) {
+    if (entities.flags[j] & ENTITYF_UNUSED) {
       break;
     }
   }
 
-  entities.type[i] = type;
-  entities.flags[i] = 0;
-  entities.p_x[i] = 0;
-  entities.p_y[i] = 0;
-  entities.tile_x[i] = tile_x;
-  entities.tile_y[i] = tile_y;
+  entities.type[j] = type;
+  entities.flags[j] = 0;
+  entities.p_x[j] = 0;
+  entities.p_y[j] = 0;
+  entities.tile_x[j] = tile_x;
+  entities.tile_y[j] = tile_y;
 
-  entities_init_entity(i, type);
+  entities_init_entity(j, type);
 
   if (entity_types.flags[type] & ETF_OWNERSHIP) {
     tile_index = TILE_INDEX(tile_x, tile_y);
-    level_owner[tile_index] = i;
+    level_owner[tile_index] = j;
   }
 
-  return i;
+  return j;
 }
 
 void entities_free(const unsigned char index) {
@@ -90,21 +90,21 @@ void entities_free(const unsigned char index) {
 }
 
 void entities_update_vera_sam() {
+  register unsigned char j;
+
   VERA.address_hi = 0x01 | VERA_INC_1;
 
-  for (i = 0; i < ENTITY_MAX; i++) {
-    flags = entities.flags[i];
+  for (j = 0; j < ENTITY_MAX; j++) {
+    flags = entities.flags[j];
     if (flags & ENTITYF_UNUSED) {
       continue;
     }
 
-    vera_x = (entities.tile_x[i] << 4) + entities.p_x[i] - camerax;
-    vera_y = (entities.tile_y[i] << 4) + entities.p_y[i] - cameray;
-    // vera_x = (entities.tile_x[i] << 4) - camerax;
-    // vera_y = (entities.tile_y[i] << 4) - cameray;
+    vera_x = (entities.tile_x[j] << 4) + entities.p_x[j] - camerax;
+    vera_y = (entities.tile_y[j] << 4) + entities.p_y[j] - cameray;
 
     // Only update coordinates, skip 2 bytes of address.
-    address = 0xFC02 + i * 8;
+    address = 0xFC02 + j * 8;
     VERA.address = address;
     VERA.data0 = vera_x;
     VERA.data0 = vera_x >> 8;
@@ -159,6 +159,7 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
 }
 
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y) {
+  static unsigned char type;
   static unsigned char tile_x;
   static unsigned char tile_y;
   static unsigned int tile_index;
@@ -170,6 +171,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   static unsigned char tile_flags;
   static unsigned char digger;
 
+  type = entities.type[entity];
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
 
@@ -177,8 +179,12 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   dest_tile_y = tile_y + move_y;
   dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
 
-  // Take ownership of new tile.
-  level_owner[dest_tile_index] = entity;
+  // Move tile ownership.
+  if (entity_types.flags[type] & ETF_OWNERSHIP) {
+    tile_index = TILE_INDEX(tile_x, tile_y);
+    level_owner[tile_index] = 0xFF;
+    level_owner[dest_tile_index] = entity;
+  }
 
   // Dig at soft tiles.
   tile_flags = tileset.flags[level_tile[dest_tile_index]];
@@ -212,22 +218,21 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   entities.tile_x[entity] = dest_tile_x;
   entities.tile_y[entity] = dest_tile_y;
 
-  // Clear out old tile ownership.
-  tile_index = TILE_INDEX(tile_x, tile_y);
-  level_owner[tile_index] = 0xFF;
   level_tile_clear(tile_x, tile_y);
 }
 
 void entities_update() {
-  for (i = 0; i < ENTITY_MAX; i++) {
-    flags = entities.flags[i];
+  register unsigned char j;
+
+  for (j = 0; j < ENTITY_MAX; j++) {
+    flags = entities.flags[j];
     if (flags & ENTITYF_UNUSED) {
       continue;
     }
 
     // Advance state.
-    counter = entities.counter[i];
-    state = entities.state[i];
+    counter = entities.counter[j];
+    state = entities.state[j];
     if (counter) {
       --counter;
       if (!counter) {
@@ -236,38 +241,39 @@ void entities_update() {
         if (!(entity_states.flags[state] & STATEF_RANDOM_REPEAT && (RANDOM & 0x80))) {
           state = entity_states.next[state];
         }
-        entities_set_state(i, state);
+        entities_set_state(j, state);
       } else {
-        entities.counter[i] = counter;
+        entities.counter[j] = counter;
       }
     }
 
     // Always move pixel position towards 0,0.
-    if (entities.p_x[i] < 0) {
-      entities.p_x[i] += 2;
-    } else if (entities.p_x[i] > 0) {
-      entities.p_x[i] -= 2;
+    if (entities.p_x[j] < 0) {
+      entities.p_x[j] += 2;
+    } else if (entities.p_x[j] > 0) {
+      entities.p_x[j] -= 2;
     }
-    if (entities.p_y[i] < 0) {
-      entities.p_y[i] += 2;
-    } else if (entities.p_y[i] > 0) {
-      entities.p_y[i] -= 2;
+    if (entities.p_y[j] < 0) {
+      entities.p_y[j] += 2;
+    } else if (entities.p_y[j] > 0) {
+      entities.p_y[j] -= 2;
     }
 
     // Run update functions.
-    type = entities.type[i];
+    type = entities.type[j];
     switch (type) {
-      case E_PLAYER: player_update(i); break;
-      case E_DIGGER: digger_update(i); break;
-      case E_GOLD: gold_update(i); break;
-      case E_DIAMOND: diamond_update(i); break;
-      case E_EXPLODE: explode_update(i); break;
-      case E_ROCK: rock_update(i); break;
+      case E_PLAYER: player_update(j); break;
+      case E_DIGGER: digger_update(j); break;
+      case E_GOLD: gold_update(j); break;
+      case E_DIAMOND: diamond_update(j); break;
+      case E_EXPLODE: explode_update(j); break;
+      case E_ROCK: rock_update(j); break;
     }
   }
 }
 
 void entities_load(const char* entity_filename) {
+  register unsigned char j;
 
   // Load level entities.
   cbm_k_setnam(entity_filename);
@@ -280,13 +286,13 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_DIAMOND] = ETF_OWNERSHIP;
   entity_types.flags[E_ROCK] = ETF_OWNERSHIP;
 
-  for (i = 0; i < ENTITY_MAX; i++) {
-    flags = entities.flags[i];
+  for (j = 0; j < ENTITY_MAX; j++) {
+    flags = entities.flags[j];
     if (flags & ENTITYF_UNUSED) {
       continue;
     }
 
-    entities_init_entity(i, entities.type[i]);
+    entities_init_entity(j, entities.type[j]);
   }
 }
 
