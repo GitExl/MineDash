@@ -40,7 +40,7 @@
 
   "entities": {
     "Player": 0,
-    "Rock": 1,
+    "Faller": 1,
     "Gold": 2,
     "Diamond": 3,
     "Explode": 4,
@@ -209,7 +209,7 @@
       "height": 16,
       "x": 0,
       "y": 128,
-      "count": 3,
+      "count": 6,
       "palette": "MAIN",
       "groups": ["LVL"]
     },
@@ -221,7 +221,7 @@
       "height": 16,
       "x": 0,
       "y": 144,
-      "count": 3,
+      "count": 6,
       "palette": "MAIN",
       "groups": ["LVL"]
     },

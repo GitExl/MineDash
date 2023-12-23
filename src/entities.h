@@ -72,7 +72,7 @@ void entities_load(const char* entity_filename);
 void entities_load_states(const char* states_filename);
 void entities_set_state(const unsigned char entity, const unsigned char state);
 void entities_free(const unsigned char index);
-unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y);
+unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y, const unsigned char flags, const unsigned char data);
 void entities_init_entity(const char index, const char type);
 void entities_set_invisible(const unsigned char index);
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index);

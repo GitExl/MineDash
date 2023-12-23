@@ -1,5 +1,5 @@
 CC=cl65
-SRC_FILES=src/camera.c src/entities.c src/input.c src/random.c src/level.c src/player.c src/sprites.c src/text.c src/digger.c src/gold.c src/diamond.c src/exit.c src/main.c src/level_names.c src/rock.c src/explode.c
+SRC_FILES=src/camera.c src/entities.c src/input.c src/random.c src/level.c src/player.c src/sprites.c src/text.c src/digger.c src/gold.c src/diamond.c src/exit.c src/main.c src/level_names.c src/faller.c src/explode.c
 
 make:
 	$(CC) --static-locals --mapfile build/MINEDASH.MAP -Osr -Cl -o build/MINEDASH.PRG -t cx16 $(SRC_FILES)

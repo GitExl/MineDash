@@ -16,7 +16,7 @@
 #include "diamond.h"
 #include "exit.h"
 #include "explode.h"
-#include "rock.h"
+#include "faller.h"
 
 // Entities.
 entity_t entities;
@@ -44,7 +44,7 @@ static unsigned int tile_index;
 
 static unsigned char ret_property_mask;
 
-unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y) {
+unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y, const unsigned char flags, const unsigned char data) {
   register unsigned char j;
 
   // Find the first unused entity.
@@ -55,7 +55,8 @@ unsigned char entities_spawn(const unsigned char type, const unsigned char tile_
   }
 
   entities.type[j] = type;
-  entities.flags[j] = 0;
+  entities.flags[j] = flags;
+  entities.data[j] = data;
   entities.p_x[j] = 0;
   entities.p_y[j] = 0;
   entities.tile_x[j] = tile_x;
@@ -189,7 +190,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   // Dig at soft tiles.
   tile_flags = tileset.flags[level_tile[dest_tile_index]];
   if (tile_flags & TILEF_SOFT) {
-    digger = entities_spawn(E_DIGGER, dest_tile_x, dest_tile_y);
+    digger = entities_spawn(E_DIGGER, dest_tile_x, dest_tile_y, 0, 0);
     state = 0;
     if (move_x < 0) {
       state = ST_LVL_DIG_H;
@@ -267,7 +268,7 @@ void entities_update() {
       case E_GOLD: gold_update(j); break;
       case E_DIAMOND: diamond_update(j); break;
       case E_EXPLODE: explode_update(j); break;
-      case E_ROCK: rock_update(j); break;
+      case E_FALLER: faller_update(j); break;
     }
   }
 }
@@ -284,7 +285,7 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_PLAYER] = ETF_OWNERSHIP;
   entity_types.flags[E_GOLD] = ETF_OWNERSHIP;
   entity_types.flags[E_DIAMOND] = ETF_OWNERSHIP;
-  entity_types.flags[E_ROCK] = ETF_OWNERSHIP;
+  entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -304,7 +305,7 @@ void entities_init_entity(const char index, const char type) {
     case E_DIAMOND: diamond_init(index); break;
     case E_EXIT: exit_init(index); break;
     case E_EXPLODE: explode_init(index); break;
-    case E_ROCK: rock_init(index); break;
+    case E_FALLER: faller_init(index); break;
   }
 }
 

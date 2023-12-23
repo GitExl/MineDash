@@ -13,11 +13,15 @@
 #define ST_LVL_PLAYER_EXIT 43
 #define ST_LVL_DIG_V 51
 #define ST_LVL_DIG_H 55
-#define ST_LVL_GOLD_TAKE 59
-#define ST_LVL_DIAM_TAKE 62
-#define ST_LVL_SPARK 65
-#define ST_LVL_EXPLODE 77
-#define ST_LVL_ROCK 84
-#define ST_LVL_ROCK_ROLL 85
+#define ST_LVL_SPARK 59
+#define ST_LVL_EXPLODE 71
+#define ST_LVL_ROCK 78
+#define ST_LVL_ROCK_ROLL 79
+#define ST_LVL_GOLD 83
+#define ST_LVL_GOLD_ROLL 84
+#define ST_LVL_GOLD_TAKE 88
+#define ST_LVL_DIAMOND 91
+#define ST_LVL_DIAMOND_ROLL 92
+#define ST_LVL_DIAMOND_TAKE 96
 
 #endif

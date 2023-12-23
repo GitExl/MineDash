@@ -4,7 +4,7 @@
 #define ENTITY_TYPES_H
 
 #define E_PLAYER 0
-#define E_ROCK 1
+#define E_FALLER 1
 #define E_GOLD 2
 #define E_DIAMOND 3
 #define E_EXPLODE 4

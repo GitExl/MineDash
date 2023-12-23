@@ -58,5 +58,6 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
 void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y);
 void level_hud_build();
 void level_update();
+unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side);
 
 #endif
