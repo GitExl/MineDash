@@ -6,10 +6,9 @@
 
 // Entity flags.
 #define ENTITYF_UNUSED     0x01   // This entity is unused.
-#define ENTITYF_NO_OWNER   0x02   // This entity does not have tile ownership tracked.
-#define ENTITYF_INVISIBLE  0x04   // This entity is not visible.
-#define ENTITYF_FLIPX      0x08   // This entity is flipped on the X axis.
-#define ENTITYF_FLIPY      0x10   // This entity is flipped on the Y axis.
+#define ENTITYF_INVISIBLE  0x02   // This entity is not visible.
+#define ENTITYF_FLIPX      0x04   // This entity is flipped on the X axis.
+#define ENTITYF_FLIPY      0x08   // This entity is flipped on the Y axis.
 
 typedef struct entity_t {
   unsigned char type[ENTITY_MAX];

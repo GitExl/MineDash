@@ -39,12 +39,12 @@ void player_update(const unsigned char index) {
     if (!y) {
       local_state = STATE_IDLE;
     }
-  } else if (local_state == STATE_LEFT || local_state == STATE_RIGHT) {
+  } else if (local_state == STATE_LEFT || local_state == STATE_RIGHT || local_state == STATE_PUSH_RIGHT || local_state == STATE_PUSH_LEFT) {
     if (!x) {
       local_state = STATE_IDLE;
     }
 
-  } else if (local_state == STATE_PUSH_LEFT) {
+  } else if (local_state == STATE_PUSH_LEFT_START) {
 
     // Cancel push.
     if (!(input1 & JOY_LEFT_MASK) && !x) {
@@ -52,12 +52,15 @@ void player_update(const unsigned char index) {
 
     // Start push if state advanced.
     } else if (state != ST_LVL_PLAYER_PUSH_RIGHT) {
-      if (!x) {
+      if (level_tile_push(tile_x - 1, tile_y, -1)) {
+        entities_tile_move(index, 1, 0);
+        local_state = STATE_PUSH_LEFT;
+      } else {
         local_state = STATE_IDLE;
       }
     }
 
-  } else if (local_state == STATE_PUSH_RIGHT) {
+  } else if (local_state == STATE_PUSH_RIGHT_START) {
 
     // Cancel push.
     if (!(input1 & JOY_RIGHT_MASK) && !x) {
@@ -65,7 +68,10 @@ void player_update(const unsigned char index) {
 
     // Start push if state advanced.
     } else if (state != ST_LVL_PLAYER_PUSH_RIGHT) {
-      if (!x) {
+      if (level_tile_push(tile_x + 1, tile_y, 1)) {
+        entities_tile_move(index, 1, 0);
+        local_state = STATE_PUSH_RIGHT;
+      } else {
         local_state = STATE_IDLE;
       }
     }
@@ -109,8 +115,7 @@ void player_update(const unsigned char index) {
         entities_tile_move(index, -1, 0);
 
       } else if (tile_flags & TILEF_PUSHABLE) {
-        // TODO: only push pushables
-        local_state = STATE_PUSH_LEFT;
+        local_state = STATE_PUSH_LEFT_START;
       }
 
     // Move right.
@@ -121,8 +126,7 @@ void player_update(const unsigned char index) {
         entities_tile_move(index, 1, 0);
 
       } else if (tile_flags & TILEF_PUSHABLE) {
-        // TODO: only push pushables
-        local_state = STATE_PUSH_RIGHT;
+        local_state = STATE_PUSH_RIGHT_START;
       }
     }
   }
@@ -141,6 +145,9 @@ void player_update(const unsigned char index) {
 
       case STATE_PUSH_LEFT: state = ST_LVL_PLAYER_PUSH_RIGHT; flags = ENTITYF_FLIPX; break;
       case STATE_PUSH_RIGHT: state = ST_LVL_PLAYER_PUSH_RIGHT; break;
+
+      case STATE_PUSH_LEFT_START: state = ST_LVL_PLAYER_PUSH_RIGHT; flags = ENTITYF_FLIPX; break;
+      case STATE_PUSH_RIGHT_START: state = ST_LVL_PLAYER_PUSH_RIGHT; break;
 
       case STATE_EXIT: state = ST_LVL_PLAYER_EXIT; break;
     }

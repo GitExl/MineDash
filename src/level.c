@@ -78,6 +78,7 @@ static unsigned char pattern;
 
 void level_load(const unsigned char level) {
   register unsigned char i, j;
+  static unsigned char type_flags;
 
   char filename[] = "lvl000.map";
 
@@ -142,7 +143,8 @@ void level_load(const unsigned char level) {
     }
 
     // Set tile ownership.
-    if (!(flags & ENTITYF_NO_OWNER)) {
+    type_flags = entity_types.flags[entities.type[i]];
+    if (type_flags & ETF_OWNERSHIP) {
       tile_index = TILE_INDEX(entities.tile_x[i], entities.tile_x[i]);
       level_owner[tile_index] = i;
     }
@@ -194,6 +196,29 @@ void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
   level_soft_evaluate(tile_x + 1, tile_y);
 }
 
+unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction) {
+  static unsigned char type;
+  static unsigned char entity;
+
+  tile_index = TILE_INDEX(tile_x, tile_y);
+  tile = level_tile[tile_index];
+  if (!(tileset.flags[tile] & TILEF_PUSHABLE)) {
+    return 0;
+  }
+
+  // Check tile behind pushable.
+  tile_index += direction;
+  if (level_tile[tile_index] || level_owner[tile_index] != 0xFF) {
+    return 0;
+  }
+
+  type = level_faller_type_for_tile(tile);
+  entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_ROLL);
+  entities_tile_move(entity, direction, 0);
+
+  return 1;
+}
+
 unsigned char level_tile_flags(const unsigned char tile_x, const unsigned char tile_y) {
   tile_index = TILE_INDEX(tile_x, tile_y);
 
@@ -217,6 +242,16 @@ unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned c
   return 0;
 }
 
+unsigned char level_faller_type_for_tile(const unsigned char tile) {
+  switch (tile) {
+    case T_LVL_ROCK: return FALLER_TYPE_ROCK;
+    case T_LVL_GOLD: return FALLER_TYPE_GOLD;
+    case T_LVL_DIAMOND: return FALLER_TYPE_DIAMOND;
+  }
+
+  return FALLER_TYPE_ROCK;
+}
+
 unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
   static unsigned char entity;
   static unsigned char type;
@@ -230,12 +265,7 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
     return 0;
   }
 
-  switch (tile) {
-    case T_LVL_ROCK: type = FALLER_TYPE_ROCK; break;
-    case T_LVL_GOLD: type = FALLER_TYPE_GOLD; break;
-    case T_LVL_DIAMOND: type = FALLER_TYPE_DIAMOND; break;
-    default: return 0;
-  }
+  type = level_faller_type_for_tile(tile);
 
   // Fall down.
   if (gravity_flags & GF_ABOVE) {

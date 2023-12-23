@@ -59,5 +59,7 @@ void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y)
 void level_hud_build();
 void level_update();
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side);
+unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction);
+unsigned char level_faller_type_for_tile(const unsigned char tile);
 
 #endif

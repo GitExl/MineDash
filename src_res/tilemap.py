@@ -16,8 +16,9 @@ ENTITIES_MAX = 64
 class EntityFlags:
 
     UNUSED = 0x01
-    NO_OWNER = 0x02
-    INVISIBLE = 0x04
+    INVISIBLE = 0x02
+    FLIPX = 0x04
+    FLIPY = 0x08
 
 
 class Entity:
@@ -146,23 +147,17 @@ class Tilemap:
 
         # Data
         s = struct.Struct('B')
-        for entity in self._entities:
-            f.write(s.pack(0))
-        for pad in range(0, pad_count):
+        for pad in range(0, ENTITIES_MAX):
             f.write(b'\x00')
 
         # State
         s = struct.Struct('B')
-        for entity in self._entities:
-            f.write(s.pack(0))
-        for pad in range(0, pad_count):
+        for pad in range(0, ENTITIES_MAX):
             f.write(b'\x00')
 
         # Counter
         s = struct.Struct('B')
-        for entity in self._entities:
-            f.write(s.pack(0))
-        for pad in range(0, pad_count):
+        for pad in range(0, ENTITIES_MAX):
             f.write(b'\x00')
 
         # X
