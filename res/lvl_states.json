@@ -27,10 +27,11 @@
   ],
 
   "PLAYER_CRUSH": [
-    ["PL_CRUSH_00", 8, 1, ""],
-    ["PL_CRUSH_01", 8, 1, ""],
-    ["PL_CRUSH_02", 8, 1, ""],
-    ["PL_CRUSH_03", 0, 0, ""]
+    ["PL_CRUSH_00", 2, 1, ""],
+    ["PL_CRUSH_01", 2, 1, ""],
+    ["PL_CRUSH_02", 2, 1, ""],
+    ["PL_CRUSH_03", 2, 1, ""],
+    ["PL_CRUSH_03", 0, 0, "INVISIBLE"]
   ],
 
   "PLAYER_BURN": [

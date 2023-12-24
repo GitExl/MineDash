@@ -14,6 +14,7 @@
 #define GF_ABOVE 0x01
 #define GF_LEFT  0x02
 #define GF_RIGHT 0x04
+#define GF_CRUSH 0x08
 
 #define TILE_INDEX(x, y) ((y & 0xFF) << 6) + (x & 0xFF)
 

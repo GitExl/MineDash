@@ -32,6 +32,7 @@ extern entity_t entities;
 #define ENTITY_TYPE_MAX 16
 
 #define ETF_OWNERSHIP 0x01
+#define ETF_CRUSHABLE 0x02
 
 typedef struct entity_type_t {
   unsigned char flags[ENTITY_TYPE_MAX];
@@ -76,5 +77,6 @@ void entities_init_entity(const char index, const char type);
 void entities_set_invisible(const unsigned char index);
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index);
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y);
+void entities_crush(const unsigned char entity);
 
 #endif

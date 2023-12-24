@@ -62,6 +62,18 @@ unsigned char entities_spawn(const unsigned char type, const unsigned char tile_
   entities.tile_x[j] = tile_x;
   entities.tile_y[j] = tile_y;
 
+  // Set VERA sprite position right now.
+  vera_x = (entities.tile_x[j] << 4) - camerax;
+  vera_y = (entities.tile_y[j] << 4) - cameray;
+
+  // Only update coordinates, skip 2 bytes of address.
+  address = 0xFC02 + j * 8;
+  VERA.address = address;
+  VERA.data0 = vera_x;
+  VERA.data0 = vera_x >> 8;
+  VERA.data0 = vera_y;
+  VERA.data0 = vera_y >> 8;
+
   entities_init_entity(j, type);
 
   if (entity_types.flags[type] & ETF_OWNERSHIP) {
@@ -282,7 +294,7 @@ void entities_load(const char* entity_filename) {
   cbm_k_load(0, (unsigned int)&entities);
 
   // Configure entity types.
-  entity_types.flags[E_PLAYER] = ETF_OWNERSHIP;
+  entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE;
   entity_types.flags[E_GOLD] = ETF_OWNERSHIP;
   entity_types.flags[E_DIAMOND] = ETF_OWNERSHIP;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
@@ -315,4 +327,21 @@ void entities_load_states(const char* states_filename) {
   cbm_k_setnam(states_filename);
   cbm_k_setlfs(0, 8, 2);
   cbm_k_load(0, (unsigned int)&entity_states);
+}
+
+void entities_crush(const unsigned char entity) {
+  static unsigned char type;
+
+  type = entities.type[entity];
+  if (entity_types.flags[type] & ETF_CRUSHABLE) {
+    switch (type) {
+      case E_PLAYER:
+        entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
+        entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
+        break;
+    }
+  }
+
+  tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
+  level_owner[tile_index] = 0xFF;
 }

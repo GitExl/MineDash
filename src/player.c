@@ -53,7 +53,7 @@ void player_update(const unsigned char index) {
     // Start push if state advanced.
     } else if (state != ST_LVL_PLAYER_PUSH_RIGHT) {
       if (level_tile_push(tile_x - 1, tile_y, -1)) {
-        entities_tile_move(index, 1, 0);
+        entities_tile_move(index, -1, 0);
         local_state = STATE_PUSH_LEFT;
       } else {
         local_state = STATE_IDLE;

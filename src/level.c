@@ -267,15 +267,6 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
 
   type = level_faller_type_for_tile(tile);
 
-  // Fall down.
-  if (gravity_flags & GF_ABOVE) {
-    if (!level_tile[tile_index + 64] && level_owner[tile_index + 64] == 0xFF) {
-      entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_FALL);
-      entities_tile_move(entity, 0, 1);
-      return 0;
-    }
-  }
-
   // Slide to right.
   if (gravity_flags & GF_LEFT) {
     if (level_tile_can_roll(tile_index, 1)) {
@@ -291,6 +282,24 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
       entity = entities_spawn(E_FALLER, tile_x, tile_y, ENTITYF_FLIPX, type | FALLER_STATE_ROLL);
       entities_tile_move(entity, -1, 0);
       return 0;
+    }
+  }
+
+  // Fall down.
+  if (gravity_flags & GF_ABOVE) {
+    tile_index += 64;
+    if (!level_tile[tile_index]) {
+
+      // Check for crushing.
+      if (gravity_flags & GF_CRUSH && level_owner[tile_index] != 0xFF) {
+        entities_crush(level_owner[tile_index]);
+
+      // Fall, if nothing was crushed.
+      } else if (level_owner[tile_index] == 0xFF) {
+        entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_FALL);
+        entities_tile_move(entity, 0, 1);
+        return 0;
+      }
     }
   }
 

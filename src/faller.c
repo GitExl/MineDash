@@ -56,6 +56,6 @@ void faller_update(unsigned char index) {
   if (!x && !y) {
     level_tile_set(tile_x, tile_y, tiles[local_type]);
     entities_free(index);
-    level_gravity_evaluate(tile_x, tile_y, GF_ABOVE | GF_LEFT | GF_RIGHT);
+    level_gravity_evaluate(tile_x, tile_y, GF_ABOVE | GF_LEFT | GF_RIGHT | GF_CRUSH);
   }
 }
