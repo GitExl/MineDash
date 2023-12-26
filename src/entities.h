@@ -33,6 +33,8 @@ extern entity_t entities;
 
 #define ETF_OWNERSHIP 0x01
 #define ETF_CRUSHABLE 0x02
+#define ETF_SPECIAL   0x04
+#define ETF_DIGS      0x08
 
 typedef struct entity_type_t {
   unsigned char flags[ENTITY_TYPE_MAX];
@@ -66,6 +68,9 @@ typedef struct entity_states_t {
 extern entity_states_t entity_states;
 
 
+#define TILE_MOVE_NO_EVALUATE 0x01   // Do not evaluate cleared tile after moving away from it.
+
+
 void entities_update_vera_sam();
 void entities_update();
 void entities_load(const char* entity_filename);
@@ -76,7 +81,7 @@ unsigned char entities_spawn(const unsigned char type, const unsigned char tile_
 void entities_init_entity(const char index, const char type);
 void entities_set_invisible(const unsigned char index);
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index);
-void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y);
+void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags);
 void entities_crush(const unsigned char entity);
 
 #endif

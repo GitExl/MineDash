@@ -53,7 +53,7 @@ void player_update(const unsigned char index) {
     // Start push if state advanced.
     } else if (state != ST_LVL_PLAYER_PUSH_RIGHT) {
       if (level_tile_push(tile_x - 1, tile_y, -1)) {
-        entities_tile_move(index, -1, 0);
+        entities_tile_move(index, -1, 0, 0);
         local_state = STATE_PUSH_LEFT;
       } else {
         local_state = STATE_IDLE;
@@ -69,7 +69,7 @@ void player_update(const unsigned char index) {
     // Start push if state advanced.
     } else if (state != ST_LVL_PLAYER_PUSH_RIGHT) {
       if (level_tile_push(tile_x + 1, tile_y, 1)) {
-        entities_tile_move(index, 1, 0);
+        entities_tile_move(index, 1, 0, 0);
         local_state = STATE_PUSH_RIGHT;
       } else {
         local_state = STATE_IDLE;
@@ -89,7 +89,7 @@ void player_update(const unsigned char index) {
   if (local_state == STATE_IDLE && !is_disabled) {
 
     // Exit.
-    if (level_tile[TILE_INDEX(tile_x, tile_y)] == T_LVL_EXIT_OPEN) {
+    if (map.tile[TILE_INDEX(tile_x, tile_y)] == T_LVL_EXIT_OPEN) {
       local_state = STATE_EXIT;
       is_disabled = PLAYER_DATA_DISABLED;
 
@@ -97,14 +97,14 @@ void player_update(const unsigned char index) {
     } else if (input1 & JOY_UP_MASK) {
       if (!level_tile_is_blocked(tile_x, tile_y - 1)) {
         local_state = STATE_UP;
-        entities_tile_move(index, 0, -1);
+        entities_tile_move(index, 0, -1, 0);
       }
 
     // Move down.
     } else if (input1 & JOY_DOWN_MASK) {
       if (!level_tile_is_blocked(tile_x, tile_y + 1)) {
         local_state = STATE_DOWN;
-        entities_tile_move(index, 0, 1);
+        entities_tile_move(index, 0, 1, 0);
       }
 
     // Move left.
@@ -112,7 +112,7 @@ void player_update(const unsigned char index) {
       tile_flags = level_tile_flags(tile_x - 1, tile_y);
       if (!level_tile_is_blocked(tile_x - 1, tile_y)) {
         local_state = STATE_LEFT;
-        entities_tile_move(index, -1, 0);
+        entities_tile_move(index, -1, 0, 0);
 
       } else if (tile_flags & TILEF_PUSHABLE) {
         local_state = STATE_PUSH_LEFT_START;
@@ -123,7 +123,7 @@ void player_update(const unsigned char index) {
       tile_flags = level_tile_flags(tile_x + 1, tile_y);
       if (!level_tile_is_blocked(tile_x + 1, tile_y)) {
         local_state = STATE_RIGHT;
-        entities_tile_move(index, 1, 0);
+        entities_tile_move(index, 1, 0, 0);
 
       } else if (tile_flags & TILEF_PUSHABLE) {
         local_state = STATE_PUSH_RIGHT_START;

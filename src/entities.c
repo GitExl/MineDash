@@ -40,12 +40,12 @@ static unsigned char type;
 static unsigned char state;
 static unsigned char counter;
 static unsigned int address;
-static unsigned int tile_index;
 
 static unsigned char ret_property_mask;
 
 unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y, const unsigned char flags, const unsigned char data) {
   register unsigned char j;
+  static unsigned int tile_index;
 
   // Find the first unused entity.
   for (j = next_unused; j < ENTITY_MAX; j++) {
@@ -66,25 +66,27 @@ unsigned char entities_spawn(const unsigned char type, const unsigned char tile_
   vera_x = (entities.tile_x[j] << 4) - camerax;
   vera_y = (entities.tile_y[j] << 4) - cameray;
 
-  // Only update coordinates, skip 2 bytes of address.
+  // Clear VERA sprite.
   address = 0xFC02 + j * 8;
   VERA.address = address;
+  VERA.address_hi = 0x01 | VERA_INC_1;
   VERA.data0 = vera_x;
   VERA.data0 = vera_x >> 8;
   VERA.data0 = vera_y;
   VERA.data0 = vera_y >> 8;
-
+  VERA.data0 = 0;
   entities_init_entity(j, type);
 
   if (entity_types.flags[type] & ETF_OWNERSHIP) {
     tile_index = TILE_INDEX(tile_x, tile_y);
-    level_owner[tile_index] = j;
+    map.owner[tile_index] = j;
   }
 
   return j;
 }
 
 void entities_free(const unsigned char index) {
+  static unsigned int tile_index;
 
   // Disable VERA sprite.
   VERA.address = 0xFC06 + index * 8;
@@ -98,7 +100,7 @@ void entities_free(const unsigned char index) {
 
   if (entity_types.flags[type] & ETF_OWNERSHIP) {
     tile_index = TILE_INDEX(entities.tile_x[index], entities.tile_y[index]);
-    level_owner[tile_index] = 0xFF;
+    map.owner[tile_index] = 0xFF;
   }
 }
 
@@ -115,6 +117,8 @@ void entities_update_vera_sam() {
 
     vera_x = (entities.tile_x[j] << 4) + entities.p_x[j] - camerax;
     vera_y = (entities.tile_y[j] << 4) + entities.p_y[j] - cameray;
+    // vera_x = (entities.tile_x[j] << 4) - camerax;
+    // vera_y = (entities.tile_y[j] << 4) - cameray;
 
     // Only update coordinates, skip 2 bytes of address.
     address = 0xFC02 + j * 8;
@@ -171,7 +175,7 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
   }
 }
 
-void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y) {
+void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags) {
   static unsigned char type;
   static unsigned char tile_x;
   static unsigned char tile_y;
@@ -182,9 +186,11 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   static unsigned int dest_tile_index;
 
   static unsigned char tile_flags;
+  static unsigned char type_flags;
   static unsigned char digger;
 
   type = entities.type[entity];
+  type_flags = entity_types.flags[type];
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
 
@@ -193,15 +199,15 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
 
   // Move tile ownership.
-  if (entity_types.flags[type] & ETF_OWNERSHIP) {
+  if (type_flags & ETF_OWNERSHIP) {
     tile_index = TILE_INDEX(tile_x, tile_y);
-    level_owner[tile_index] = 0xFF;
-    level_owner[dest_tile_index] = entity;
+    map.owner[tile_index] = 0xFF;
+    map.owner[dest_tile_index] = entity;
   }
 
   // Dig at soft tiles.
-  tile_flags = tileset.flags[level_tile[dest_tile_index]];
-  if (tile_flags & TILEF_SOFT) {
+  tile_flags = tileset.flags[map.tile[dest_tile_index]];
+  if (type_flags & ETF_DIGS && tile_flags & TILEF_SOFT) {
     digger = entities_spawn(E_DIGGER, dest_tile_x, dest_tile_y, 0, 0);
     state = 0;
     if (move_x < 0) {
@@ -220,7 +226,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
     }
 
   // Handle special tiles.
-  } else if (tile_flags & TILEF_SPECIAL) {
+  } else if (type_flags & ETF_SPECIAL && tile_flags & TILEF_SPECIAL) {
     level_tile_special(dest_tile_x, dest_tile_y);
 
   }
@@ -231,7 +237,11 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   entities.tile_x[entity] = dest_tile_x;
   entities.tile_y[entity] = dest_tile_y;
 
-  level_tile_clear(tile_x, tile_y);
+  if (move_flags & TILE_MOVE_NO_EVALUATE) {
+    level_tile_set(tile_x, tile_y, 0);
+  } else {
+    level_tile_clear(tile_x, tile_y);
+  }
 }
 
 void entities_update() {
@@ -294,9 +304,7 @@ void entities_load(const char* entity_filename) {
   cbm_k_load(0, (unsigned int)&entities);
 
   // Configure entity types.
-  entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE;
-  entity_types.flags[E_GOLD] = ETF_OWNERSHIP;
-  entity_types.flags[E_DIAMOND] = ETF_OWNERSHIP;
+  entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_DIGS | ETF_SPECIAL;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
 
   for (j = 0; j < ENTITY_MAX; j++) {
@@ -331,6 +339,7 @@ void entities_load_states(const char* states_filename) {
 
 void entities_crush(const unsigned char entity) {
   static unsigned char type;
+  static unsigned int tile_index;
 
   type = entities.type[entity];
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
@@ -340,8 +349,8 @@ void entities_crush(const unsigned char entity) {
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;
     }
-  }
 
-  tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
-  level_owner[tile_index] = 0xFF;
+    tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
+    map.owner[tile_index] = 0xFF;
+  }
 }

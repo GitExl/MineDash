@@ -30,11 +30,11 @@ unsigned char level_next = 0;
 // Level metadata.
 level_info_t level_info;
 
-// Level tile indices.
-unsigned char level_tile[64 * 64];
+// Level map tiles.
+map_t map;
 
-// Level tile entity ownership.
-unsigned char level_owner[64 * 64];
+// Tileset metadata.
+tileset_t tileset;
 
 // Player entity index.
 extern unsigned char entity_player;
@@ -64,9 +64,6 @@ unsigned char level_clock;
 
 // Set if the HUD needs to be updated this frame.
 unsigned char level_hud_update;
-
-// Tileset metadata.
-tileset_t tileset;
 
 // Module shared variables.
 static unsigned int tile_index;
@@ -126,8 +123,8 @@ void level_load(const unsigned char level) {
   tile_index = 0;
   for (i = 0; i < 64; i++) {
     for (j = 0; j < 64; j++) {
-      level_tile[tile_index++] = VERA.data0;
-      level_owner[tile_index] = 0xFF;
+      map.tile[tile_index] = VERA.data0;
+      map.owner[++tile_index] = 0xFF;
     }
   }
 
@@ -146,7 +143,7 @@ void level_load(const unsigned char level) {
     type_flags = entity_types.flags[entities.type[i]];
     if (type_flags & ETF_OWNERSHIP) {
       tile_index = TILE_INDEX(entities.tile_x[i], entities.tile_x[i]);
-      level_owner[tile_index] = i;
+      map.owner[tile_index] = i;
     }
 
     // Track player entity index.
@@ -177,13 +174,14 @@ void level_load_graphics() {
 void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
   level_tile_set(tile_x, tile_y, 0);
 
-  // Check for gravity objects.
-  // Right above.
+  // Check for gravity objects right above.
   level_gravity_evaluate(tile_x, tile_y - 1, GF_ABOVE);
+
   // If tile to the left has gravity, also check tile above that.
   if (level_gravity_evaluate(tile_x - 1, tile_y, GF_LEFT)) {
     level_gravity_evaluate(tile_x - 1, tile_y - 1, GF_LEFT);
   }
+
   // If tile to the right has gravity, also check tile above that.
   if (level_gravity_evaluate(tile_x + 1, tile_y, GF_RIGHT)) {
     level_gravity_evaluate(tile_x + 1, tile_y - 1, GF_RIGHT);
@@ -198,23 +196,25 @@ void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
 
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction) {
   static unsigned char type;
-  static unsigned char entity;
 
   tile_index = TILE_INDEX(tile_x, tile_y);
-  tile = level_tile[tile_index];
+  tile = map.tile[tile_index];
   if (!(tileset.flags[tile] & TILEF_PUSHABLE)) {
     return 0;
   }
 
   // Check tile behind pushable.
   tile_index += direction;
-  if (level_tile[tile_index] || level_owner[tile_index] != 0xFF) {
+  if (map.tile[tile_index] || map.owner[tile_index] != 0xFF) {
     return 0;
   }
 
   type = level_faller_type_for_tile(tile);
-  entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_ROLL);
-  entities_tile_move(entity, direction, 0);
+  if (direction < 0) {
+    entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_PUSH_LEFT);
+  } else {
+    entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_PUSH_RIGHT);
+  }
 
   return 1;
 }
@@ -222,20 +222,20 @@ unsigned char level_tile_push(const unsigned char tile_x, const unsigned char ti
 unsigned char level_tile_flags(const unsigned char tile_x, const unsigned char tile_y) {
   tile_index = TILE_INDEX(tile_x, tile_y);
 
-  tile = level_tile[tile_index];
+  tile = map.tile[tile_index];
   return tileset.flags[tile];
 }
 
 unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned char tile_y) {
   tile_index = TILE_INDEX(tile_x, tile_y);
 
-  tile = level_tile[tile_index];
+  tile = map.tile[tile_index];
   tile_flags = tileset.flags[tile];
   if (tile_flags & TILEF_BLOCKS) {
     return 1;
   }
 
-  if (level_owner[tile_index] != 0xFF) {
+  if (map.owner[tile_index] != 0xFF) {
     return 1;
   }
 
@@ -255,11 +255,10 @@ unsigned char level_faller_type_for_tile(const unsigned char tile) {
 unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
   static unsigned char entity;
   static unsigned char type;
-
-  register unsigned char tile;
+  static unsigned char tile;
 
   tile_index = TILE_INDEX(tile_x, tile_y);
-  tile = level_tile[tile_index];
+  tile = map.tile[tile_index];
   tile_flags = tileset.flags[tile];
   if (!(tile_flags & TILEF_GRAVITY)) {
     return 0;
@@ -268,58 +267,52 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
   type = level_faller_type_for_tile(tile);
 
   // Slide to right.
-  if (gravity_flags & GF_LEFT) {
-    if (level_tile_can_roll(tile_index, 1)) {
-      entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_ROLL);
-      entities_tile_move(entity, 1, 0);
-      return 0;
-    }
+  if (gravity_flags & GF_LEFT && level_tile_can_roll(tile_index, 1)) {
+    entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_ROLL_RIGHT);
+    return 0;
   }
 
   // Slide to left.
-  if (gravity_flags & GF_RIGHT) {
-    if (level_tile_can_roll(tile_index, -1)) {
-      entity = entities_spawn(E_FALLER, tile_x, tile_y, ENTITYF_FLIPX, type | FALLER_STATE_ROLL);
-      entities_tile_move(entity, -1, 0);
-      return 0;
-    }
+  if (gravity_flags & GF_RIGHT && level_tile_can_roll(tile_index, -1)) {
+    entity = entities_spawn(E_FALLER, tile_x, tile_y, ENTITYF_FLIPX, type | FALLER_STATE_ROLL_LEFT);
+    return 0;
   }
 
   // Fall down.
   if (gravity_flags & GF_ABOVE) {
-    tile_index += 64;
-    if (!level_tile[tile_index]) {
+    tile_index += MAP_WIDTH;
+    if (!map.tile[tile_index]) {
 
       // Check for crushing.
-      if (gravity_flags & GF_CRUSH && level_owner[tile_index] != 0xFF) {
-        entities_crush(level_owner[tile_index]);
+      if (gravity_flags & GF_CRUSH && map.owner[tile_index] != 0xFF) {
+        entities_crush(map.owner[tile_index]);
+      }
 
-      // Fall, if nothing was crushed.
-      } else if (level_owner[tile_index] == 0xFF) {
+      // Fall, if now possible.
+      if (map.owner[tile_index] == 0xFF) {
         entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_FALL);
-        entities_tile_move(entity, 0, 1);
         return 0;
       }
     }
   }
 
-  // Indicates that this tile was affected by gravity.
+  // Indicates that this tile was affected by gravity but does not need to move.
   return 1;
 }
 
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side) {
 
   // The tile below must be a gravity affected tile.
-  tile = level_tile[tile_index + 64];
+  tile = map.tile[tile_index + MAP_WIDTH];
   if (tileset.flags[tile] & TILEF_GRAVITY) {
 
     // The side tile must be empty.
     tile_index += side;
-    if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+    if (!map.tile[tile_index] && map.owner[tile_index] == 0xFF) {
 
       // The tile below and to the side must be empty.
-      tile_index += 64;
-      if (!level_tile[tile_index] && level_owner[tile_index] == 0xFF) {
+      tile_index += MAP_WIDTH;
+      if (!map.tile[tile_index] && map.owner[tile_index] == 0xFF) {
         return 1;
       }
     }
@@ -330,7 +323,7 @@ unsigned char level_tile_can_roll(unsigned int tile_index, const signed char sid
 
 void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) {
   tile_index = TILE_INDEX(tile_x, tile_y);
-  tile = level_tile[tile_index];
+  tile = map.tile[tile_index];
 
   switch (tile) {
 
@@ -368,7 +361,7 @@ void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) 
 
 void level_tile_set(const unsigned char tile_x, const unsigned char tile_y, const unsigned char tile) {
   tile_index = TILE_INDEX(tile_x, tile_y);
-  level_tile[tile_index] = tile;
+  map.tile[tile_index] = tile;
 
   VERA.address = 0x8000 + tile_index * 2;
   VERA.address_hi = VERA_INC_1;
@@ -380,26 +373,26 @@ void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y)
 
   // Only process soft tiles.
   tile_index = TILE_INDEX(tile_x, tile_y);
-  if (!(tileset.flags[level_tile[tile_index]] & TILEF_SOFT)) {
+  if (!(tileset.flags[map.tile[tile_index]] & TILEF_SOFT)) {
     return;
   }
 
   // Determines a pattern of 4 tiles around this tile.
   pattern = 0;
   tile_index = TILE_INDEX(tile_x, tile_y - 1);
-  if (tileset.flags[level_tile[tile_index]] & TILEF_SOFT) {
+  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b1000;
   }
   tile_index = TILE_INDEX(tile_x, tile_y + 1);
-  if (tileset.flags[level_tile[tile_index]] & TILEF_SOFT) {
+  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0100;
   }
   tile_index = TILE_INDEX(tile_x - 1, tile_y);
-  if (tileset.flags[level_tile[tile_index]] & TILEF_SOFT) {
+  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0010;
   }
   tile_index = TILE_INDEX(tile_x + 1, tile_y);
-  if (tileset.flags[level_tile[tile_index]] & TILEF_SOFT) {
+  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0001;
   }
   level_tile_set(tile_x, tile_y, soft_tiles[pattern]);

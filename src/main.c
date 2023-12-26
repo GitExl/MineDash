@@ -42,6 +42,7 @@ void init() {
 
 void main() {
   clock_t start;
+  // char i;
 
   init();
 
@@ -84,7 +85,9 @@ void main() {
     entities_update_vera_sam();
 
     // Wait for vsync.
-    start = clock();
-    do {} while (start == clock());
+    // for (i = 0; i < 2; i++) {
+      start = clock();
+      do {} while (start == clock());
+    // }
   }
 }

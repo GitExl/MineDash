@@ -1,22 +1,12 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#define TILE_MAX 64
-
-#define TILEF_BLOCKS       0x01
-#define TILEF_SOFT         0x02
-#define TILEF_LETHAL       0x04
-#define TILEF_SPECIAL      0x08
-#define TILEF_DESTRUCTIBLE 0x10
-#define TILEF_GRAVITY      0x20
-#define TILEF_PUSHABLE     0x40
-
-#define GF_ABOVE 0x01
-#define GF_LEFT  0x02
-#define GF_RIGHT 0x04
-#define GF_CRUSH 0x08
 
 #define TILE_INDEX(x, y) ((y & 0xFF) << 6) + (x & 0xFF)
+
+#define MAP_WIDTH 64
+#define MAP_HEIGHT 64
+
 
 typedef struct level_info_t {
   unsigned int left;
@@ -30,6 +20,17 @@ typedef struct level_info_t {
 
 extern level_info_t level_info;
 
+
+#define TILE_MAX 64
+
+#define TILEF_BLOCKS       0x01
+#define TILEF_SOFT         0x02
+#define TILEF_LETHAL       0x04
+#define TILEF_SPECIAL      0x08
+#define TILEF_DESTRUCTIBLE 0x10
+#define TILEF_GRAVITY      0x20
+#define TILEF_PUSHABLE     0x40
+
 typedef struct tileset_t {
   unsigned char palette[TILE_MAX];
   unsigned char flags[TILE_MAX];
@@ -37,16 +38,26 @@ typedef struct tileset_t {
 
 extern tileset_t tileset;
 
-extern unsigned char level_tile[4096];
-extern unsigned char level_owner[4096];
+
+typedef struct map_t {
+  unsigned char tile[MAP_WIDTH * MAP_HEIGHT];
+  unsigned char owner[MAP_WIDTH * MAP_HEIGHT];
+} map_t;
+
+extern map_t map;
+
 
 extern unsigned char entity_player;
 
-extern unsigned char level_tile_x;
-extern unsigned char level_tile_y;
-
 extern unsigned char level_current;
 extern unsigned char level_next;
+
+
+#define GF_ABOVE 0x01
+#define GF_LEFT  0x02
+#define GF_RIGHT 0x04
+#define GF_CRUSH 0x08
+
 
 void level_load(const unsigned char level);
 void level_load_graphics();
