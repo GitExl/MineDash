@@ -32,7 +32,8 @@ void init() {
   VERA.display.vstop = 128;
   VERA.display.video = 0b00100001;
 
-  text_write_center(10, 0b11110010, "loading game");
+  text_box(8, 9, 24, 7, 0b10001001);
+  text_write_center(12, 0b10001010, "loading game");
 
   random_init();
 
@@ -54,9 +55,10 @@ void main() {
         case GAMEACTION_LOAD_LEVEL:
           VERA.display.video &= ~0b01010000;
 
-          text_clear();
-          text_write_center(10, 0b11110100, "entering");
-          text_write_center(12, 0b11110110, level_names[level_next]);
+          text_hud_clear();
+          text_box(8, 9, 24, 7, 0b10001001);
+          text_write_center(11, 0b10001010, "entering");
+          text_write_center(13, 0b10000110, level_names[level_next]);
 
           level_load(level_next);
           camera_update();

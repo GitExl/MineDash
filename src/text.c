@@ -2,7 +2,10 @@
 #include <cbm.h>
 #include <string.h>
 
+#include "text.h"
+
 static unsigned char len;
+static unsigned char i, j;
 
 void text_load() {
 
@@ -20,7 +23,7 @@ void text_load() {
 }
 
 void text_clear() {
-  register unsigned char i = 240;
+  i = 240;
 
   VERA.address = 0xB000;
   VERA.address_hi = 0x01 | VERA_INC_1;
@@ -45,8 +48,19 @@ void text_clear() {
   } while (--i);
 }
 
+void text_clear_line(const unsigned char line) {
+  i = 64;
+
+  VERA.address = 0xB000 + line * 128;
+  VERA.address_hi = 0x01 | VERA_INC_1;
+  do {
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+  } while (--i);
+}
+
 void text_hud_clear() {
-  register unsigned char i = 128;
+  i = 128;
 
   VERA.address = 0xBD00;
   VERA.address_hi = 0x01 | VERA_INC_1;
@@ -75,4 +89,49 @@ void text_write(const unsigned char x, const unsigned char y, const unsigned cha
 void text_write_center(const unsigned char y, const unsigned char colors, char* str) {
   len = strlen(str) >> 1;
   text_write(20 - len, y, colors, str);
+}
+
+void text_box(const unsigned char x, const unsigned char y, unsigned char width, unsigned char height, const unsigned char colors) {
+  const unsigned int step = 128 - (width * 2);
+
+  width -= 2;
+  height -= 2;
+
+  VERA.address = 0xB000 + (y * 128) + (x * 2);
+  VERA.address_hi = 0x01 | VERA_INC_1;
+
+  // Top.
+  VERA.data0 = 0x70;
+  VERA.data0 = colors;
+  for (i = 0; i < width; i++) {
+    VERA.data0 = 0x71;
+    VERA.data0 = colors;
+  }
+  VERA.data0 = 0x72;
+  VERA.data0 = colors;
+
+  // Sides.
+  for (i = 0; i < height; i++) {
+    VERA.address += step;
+
+    VERA.data0 = 0x76;
+    VERA.data0 = colors;
+    for (j = 0; j < width; j++) {
+      VERA.data0 = 0x00;
+      VERA.data0 = colors;
+    }
+    VERA.data0 = 0x77;
+    VERA.data0 = colors;
+  }
+
+  // Bottom.
+  VERA.address += step;
+  VERA.data0 = 0x73;
+  VERA.data0 = colors;
+  for (i = 0; i < width; i++) {
+    VERA.data0 = 0x74;
+    VERA.data0 = colors;
+  }
+  VERA.data0 = 0x75;
+  VERA.data0 = colors;
 }

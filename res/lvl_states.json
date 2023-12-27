@@ -50,7 +50,9 @@
   "PLAYER_PUSH_RIGHT": [
     ["PL_PUSH_00", 24, 1, ""],
     ["PL_PUSH_01", 12, 1, ""],
-    ["PL_PUSH_00", 12, -1, ""]
+    ["PL_PUSH_02", 12, 1, ""],
+    ["PL_PUSH_03", 12, 1, ""],
+    ["PL_PUSH_00", 12, -3, ""]
   ],
 
   "PLAYER_EXIT": [
