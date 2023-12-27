@@ -40,7 +40,7 @@ tileset_t tileset;
 extern unsigned char entity_player;
 
 // Soft dirt tile sides.
-unsigned char soft_tiles[16] = {
+unsigned char dirt_tiles[16] = {
   T_LVL_DIRT_MID,
   T_LVL_DIRT_CAPLEFT,
   T_LVL_DIRT_CAPRIGHT,
@@ -174,24 +174,18 @@ void level_load_graphics() {
 void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
   level_tile_set(tile_x, tile_y, 0);
 
-  // Check for gravity objects right above.
-  level_gravity_evaluate(tile_x, tile_y - 1, GF_ABOVE);
+  // Check for gravity objects abive and to the sides of the tile.
+  level_tile_evaluate_faller(tile_x, tile_y - 1, GF_ABOVE);
+  level_tile_evaluate_faller(tile_x - 1, tile_y, GF_LEFT);
+  level_tile_evaluate_faller(tile_x - 1, tile_y - 1, GF_LEFT);
+  level_tile_evaluate_faller(tile_x + 1, tile_y, GF_RIGHT);
+  level_tile_evaluate_faller(tile_x + 1, tile_y - 1, GF_RIGHT);
 
-  // If tile to the left has gravity, also check tile above that.
-  if (level_gravity_evaluate(tile_x - 1, tile_y, GF_LEFT)) {
-    level_gravity_evaluate(tile_x - 1, tile_y - 1, GF_LEFT);
-  }
-
-  // If tile to the right has gravity, also check tile above that.
-  if (level_gravity_evaluate(tile_x + 1, tile_y, GF_RIGHT)) {
-    level_gravity_evaluate(tile_x + 1, tile_y - 1, GF_RIGHT);
-  }
-
-  // Evaluate tiles that should have soft borders.
-  level_soft_evaluate(tile_x, tile_y - 1);
-  level_soft_evaluate(tile_x, tile_y + 1);
-  level_soft_evaluate(tile_x - 1, tile_y);
-  level_soft_evaluate(tile_x + 1, tile_y);
+  // Evaluate dirt tiles that should have soft borders.
+  level_tile_evaluate_dirt(tile_x, tile_y - 1);
+  level_tile_evaluate_dirt(tile_x, tile_y + 1);
+  level_tile_evaluate_dirt(tile_x - 1, tile_y);
+  level_tile_evaluate_dirt(tile_x + 1, tile_y);
 }
 
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction) {
@@ -209,12 +203,8 @@ unsigned char level_tile_push(const unsigned char tile_x, const unsigned char ti
     return 0;
   }
 
-  type = level_faller_type_for_tile(tile);
-  if (direction < 0) {
-    entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_PUSH_LEFT);
-  } else {
-    entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_PUSH_RIGHT);
-  }
+  type = faller_type_for_tile(tile);
+  entities_spawn(E_FALLER, tile_x, tile_y, 0, type | (direction < 0 ? FALLER_STATE_PUSH_LEFT : FALLER_STATE_PUSH_RIGHT));
 
   return 1;
 }
@@ -242,40 +232,39 @@ unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned c
   return 0;
 }
 
-unsigned char level_faller_type_for_tile(const unsigned char tile) {
-  switch (tile) {
-    case T_LVL_ROCK: return FALLER_TYPE_ROCK;
-    case T_LVL_GOLD: return FALLER_TYPE_GOLD;
-    case T_LVL_DIAMOND: return FALLER_TYPE_DIAMOND;
-  }
-
-  return FALLER_TYPE_ROCK;
-}
-
-unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
+void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
   static unsigned char entity;
   static unsigned char type;
   static unsigned char tile;
+  static unsigned char state;
 
   tile_index = TILE_INDEX(tile_x, tile_y);
   tile = map.tile[tile_index];
   tile_flags = tileset.flags[tile];
   if (!(tile_flags & TILEF_GRAVITY)) {
-    return 0;
+    return;
   }
 
-  type = level_faller_type_for_tile(tile);
+  state = level_tile_evaluate_gravity(tile_index, gravity_flags);
+  if (state) {
+    type = faller_type_for_tile(tile);
+    entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | state | 2);
+    if (state == FALLER_STATE_ROLL_LEFT) {
+      entities.flags[entity] |= ENTITYF_FLIPX;
+    }
+  }
+}
+
+unsigned char level_tile_evaluate_gravity(unsigned int tile_index, const unsigned char gravity_flags) {
 
   // Slide to right.
   if (gravity_flags & GF_LEFT && level_tile_can_roll(tile_index, 1)) {
-    entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_ROLL_RIGHT);
-    return 0;
+    return FALLER_STATE_ROLL_RIGHT;
   }
 
   // Slide to left.
   if (gravity_flags & GF_RIGHT && level_tile_can_roll(tile_index, -1)) {
-    entity = entities_spawn(E_FALLER, tile_x, tile_y, ENTITYF_FLIPX, type | FALLER_STATE_ROLL_LEFT);
-    return 0;
+    return FALLER_STATE_ROLL_LEFT;
   }
 
   // Fall down.
@@ -290,14 +279,12 @@ unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned 
 
       // Fall, if now possible.
       if (map.owner[tile_index] == 0xFF) {
-        entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | FALLER_STATE_FALL);
-        return 0;
+        return FALLER_STATE_FALL;
       }
     }
   }
 
-  // Indicates that this tile was affected by gravity but does not need to move.
-  return 1;
+  return 0;
 }
 
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side) {
@@ -321,7 +308,7 @@ unsigned char level_tile_can_roll(unsigned int tile_index, const signed char sid
   return 0;
 }
 
-void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) {
+void level_tile_execute_special(const unsigned char tile_x, const unsigned char tile_y) {
   tile_index = TILE_INDEX(tile_x, tile_y);
   tile = map.tile[tile_index];
 
@@ -339,7 +326,7 @@ void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) 
       level_hud_update = 1;
 
       level_tile_clear(tile_x, tile_y);
-      entities_set_state(entities_spawn(E_GOLD, tile_x, tile_y, 0, 0), ST_LVL_GOLD_TAKE);
+      entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_GOLD_TAKE);
       break;
 
     // Diamond.
@@ -354,7 +341,7 @@ void level_tile_special(const unsigned char tile_x, const unsigned char tile_y) 
       level_hud_update = 1;
 
       level_tile_clear(tile_x, tile_y);
-      entities_set_state(entities_spawn(E_DIAMOND, tile_x, tile_y, 0, 0), ST_LVL_DIAMOND_TAKE);
+      entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_DIAMOND_TAKE);
       break;
   }
 }
@@ -369,7 +356,7 @@ void level_tile_set(const unsigned char tile_x, const unsigned char tile_y, cons
   VERA.data0 = tileset.palette[tile] << 4;
 }
 
-void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y) {
+void level_tile_evaluate_dirt(const unsigned char tile_x, const unsigned char tile_y) {
 
   // Only process soft tiles.
   tile_index = TILE_INDEX(tile_x, tile_y);
@@ -395,7 +382,7 @@ void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y)
   if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0001;
   }
-  level_tile_set(tile_x, tile_y, soft_tiles[pattern]);
+  level_tile_set(tile_x, tile_y, dirt_tiles[pattern]);
 }
 
 void level_hud_build() {
@@ -419,7 +406,7 @@ void level_update() {
     if (!level_clock) {
       if (!level_info.time_seconds) {
         if (!level_info.time_minutes) {
-          entities_spawn(E_EXPLODE, entities.tile_x[entity_player], entities.tile_y[entity_player], 0, 0);
+          entities_set_state(entities_spawn(E_ANIM, entities.tile_x[entity_player], entities.tile_y[entity_player], 0, 0), ST_LVL_EXPLODE);
           entities.data[entity_player] |= PLAYER_DATA_DISABLED;
           entities_set_invisible(entity_player);
         } else {

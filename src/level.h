@@ -62,16 +62,16 @@ extern unsigned char level_next;
 void level_load(const unsigned char level);
 void level_load_graphics();
 void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y);
-void level_tile_special(const unsigned char tile_x, const unsigned char tile_y);
+void level_tile_execute_special(const unsigned char tile_x, const unsigned char tile_y);
 void level_tile_set(const unsigned char tile_x, const unsigned char tile_y, const unsigned char tile);
 unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned char tile_y);
 unsigned char level_tile_flags(const unsigned char tile_x, const unsigned char tile_y);
-unsigned char level_gravity_evaluate(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags);
-void level_soft_evaluate(const unsigned char tile_x, const unsigned char tile_y);
+void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags);
+unsigned char level_tile_evaluate_gravity(unsigned int tile_index, const unsigned char gravity_flags);
+void level_tile_evaluate_dirt(const unsigned char tile_x, const unsigned char tile_y);
 void level_hud_build();
 void level_update();
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side);
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction);
-unsigned char level_faller_type_for_tile(const unsigned char tile);
 
 #endif

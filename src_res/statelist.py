@@ -10,6 +10,7 @@ STATE_MAX = 256
 class StateFlags:
     REPEAT_RANDOM = 0x01
     INVISIBLE = 0x02
+    DESTROY = 0x04
 
 
 class State:
@@ -31,6 +32,8 @@ class State:
                     flags |= StateFlags.REPEAT_RANDOM
                 elif flag_str == 'INVISIBLE':
                     flags |= StateFlags.INVISIBLE
+                elif flag_str == 'DESTROY':
+                    flags |= StateFlags.DESTROY
                 else:
                     raise Exception('Unknown state flag {}'.format(flag_str))
 

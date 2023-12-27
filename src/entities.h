@@ -48,7 +48,8 @@ extern entity_type_t entity_types;
 
 // State flags.
 #define STATEF_RANDOM_REPEAT 0x01   // 50% chance to repeat this state.
-#define STATEF_INVISIBLE     0x02   // This tstate is invisible.
+#define STATEF_INVISIBLE     0x02   // This state is invisible.
+#define STATEF_DESTROY       0x04   // The entity will be destroyed after this state.
 
 typedef struct entity_states_t {
 

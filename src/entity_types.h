@@ -5,11 +5,9 @@
 
 #define E_PLAYER 0
 #define E_FALLER 1
-#define E_GOLD 2
-#define E_DIAMOND 3
-#define E_EXPLODE 4
-#define E_DYNAMITE 5
-#define E_DIGGER 6
-#define E_EXIT 7
+#define E_ANIM 2
+#define E_DYNAMITE 3
+#define E_DIGGER 4
+#define E_EXIT 5
 
 #endif

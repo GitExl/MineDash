@@ -12,10 +12,8 @@
 
 #include "player.h"
 #include "digger.h"
-#include "gold.h"
-#include "diamond.h"
 #include "exit.h"
-#include "explode.h"
+#include "anim.h"
 #include "faller.h"
 
 // Entities.
@@ -87,6 +85,11 @@ unsigned char entities_spawn(const unsigned char type, const unsigned char tile_
 
 void entities_free(const unsigned char index) {
   static unsigned int tile_index;
+
+  type = entities.type[index];
+  switch (type) {
+    case E_DIGGER: digger_destroy(index); break;
+  }
 
   // Disable VERA sprite.
   VERA.address = 0xFC06 + index * 8;
@@ -227,7 +230,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
 
   // Handle special tiles.
   } else if (type_flags & ETF_SPECIAL && tile_flags & TILEF_SPECIAL) {
-    level_tile_special(dest_tile_x, dest_tile_y);
+    level_tile_execute_special(dest_tile_x, dest_tile_y);
 
   }
 
@@ -246,6 +249,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
 
 void entities_update() {
   register unsigned char j;
+  static unsigned char state_flags;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -259,9 +263,16 @@ void entities_update() {
     if (counter) {
       --counter;
       if (!counter) {
+        state_flags = entity_states.flags[state];
+
+        // Destroy.
+        if (state_flags & STATEF_DESTROY) {
+          entities_free(j);
+          continue;
+        }
 
         // Repeat state 50% of the time.
-        if (!(entity_states.flags[state] & STATEF_RANDOM_REPEAT && (RANDOM & 0x80))) {
+        if (!(state_flags & STATEF_RANDOM_REPEAT && (RANDOM & 0x80))) {
           state = entity_states.next[state];
         }
         entities_set_state(j, state);
@@ -286,10 +297,6 @@ void entities_update() {
     type = entities.type[j];
     switch (type) {
       case E_PLAYER: player_update(j); break;
-      case E_DIGGER: digger_update(j); break;
-      case E_GOLD: gold_update(j); break;
-      case E_DIAMOND: diamond_update(j); break;
-      case E_EXPLODE: explode_update(j); break;
       case E_FALLER: faller_update(j); break;
     }
   }
@@ -320,11 +327,7 @@ void entities_load(const char* entity_filename) {
 void entities_init_entity(const char index, const char type) {
   switch (type) {
     case E_PLAYER: player_init(index); break;
-    case E_DIGGER: digger_init(index); break;
-    case E_GOLD: gold_init(index); break;
-    case E_DIAMOND: diamond_init(index); break;
     case E_EXIT: exit_init(index); break;
-    case E_EXPLODE: explode_init(index); break;
     case E_FALLER: faller_init(index); break;
   }
 }
