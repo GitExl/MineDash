@@ -36,15 +36,13 @@ void faller_init(const unsigned char index) {
   static unsigned char tile_x;
   static unsigned char tile_y;
   static unsigned char local_type;
-  static unsigned char local_state;
 
   tile_x = entities.tile_x[index];
   tile_y = entities.tile_y[index];
   local_type = (entities.data[index] & FALLER_DATA_TYPE) >> 2;
-  local_state = entities.data[index] & FALLER_DATA_STATE;
 
+  entities_set_state(index, fall_states[local_type]);
   level_tile_set(tile_x, tile_y, 0);
-  entities_set_state(index, local_state == FALLER_STATE_FALL ? fall_states[local_type] : roll_states[local_type]);
 }
 
 void faller_update(const unsigned char index) {
@@ -75,14 +73,7 @@ void faller_update(const unsigned char index) {
       state = level_tile_evaluate_gravity(tile_index, GF_ABOVE | GF_LEFT | GF_RIGHT | GF_CRUSH);
       if (state) {
         local_state = state;
-        if (state == FALLER_STATE_FALL) {
-          entities_set_state(index, fall_states[local_type]);
-        } else {
-          entities_set_state(index, roll_states[local_type]);
-        }
-        if (state == FALLER_STATE_ROLL_LEFT) {
-          entities.flags[index] = ENTITYF_FLIPX;
-        }
+        faller_set_state(index, local_state, local_type);
 
       } else {
         level_tile_set(tile_x, tile_y, tiles[local_type]);
@@ -92,6 +83,7 @@ void faller_update(const unsigned char index) {
       }
     }
 
+    // Perform actual roll or fall.
     if (local_state != FALLER_STATE_IDLE) {
       if (local_state == FALLER_STATE_ROLL_LEFT) {
         dir_x = -1;
@@ -111,7 +103,9 @@ void faller_update(const unsigned char index) {
       tile_index = TILE_INDEX(tile_x + dir_x, tile_y + dir_y);
       if (!map.tile[tile_index] && map.owner[tile_index] == 0xFF) {
         entities_tile_move(index, dir_x, dir_y, move_flags);
+        faller_set_state(index, local_state, local_type);
         local_state = FALLER_STATE_IDLE;
+
       } else {
         level_tile_set(tile_x, tile_y, tiles[local_type]);
         entities_free(index);
@@ -131,4 +125,9 @@ unsigned char faller_type_for_tile(const unsigned char tile) {
   }
 
   return FALLER_TYPE_ROCK;
+}
+
+void faller_set_state(const unsigned char index, const unsigned char local_state, const unsigned char local_type) {
+  entities_set_state(index, (local_state == FALLER_STATE_FALL) ? fall_states[local_type] : roll_states[local_type]);
+  entities.flags[index] = (local_state == FALLER_STATE_ROLL_LEFT || local_state == FALLER_STATE_PUSH_LEFT) ? ENTITYF_FLIPX : 0;
 }

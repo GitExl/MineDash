@@ -144,7 +144,7 @@ void entities_set_invisible(const unsigned char entity) {
 }
 
 void entities_set_state(const unsigned char entity, const unsigned char state) {
-  unsigned char sprite = entity_states.sprite[state];
+  const unsigned char sprite = entity_states.sprite[state];
 
   address = sprites.address[sprite];
   entities.state[entity] = state;
@@ -163,8 +163,8 @@ void entities_set_state(const unsigned char entity, const unsigned char state) {
 }
 
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index) {
-  unsigned char entity_flags = entities.flags[entity];
-  unsigned char state_flags = entity_states.flags[state_index];
+  const unsigned char entity_flags = entities.flags[entity];
+  const unsigned char state_flags = entity_states.flags[state_index];
 
   ret_property_mask = 0b00000000;
   if (entity_flags & ENTITYF_FLIPX) {

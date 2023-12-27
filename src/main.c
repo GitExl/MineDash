@@ -85,7 +85,7 @@ void main() {
     entities_update_vera_sam();
 
     // Wait for vsync.
-    // for (i = 0; i < 2; i++) {
+    // for (i = 0; i < 4; i++) {
       start = clock();
       do {} while (start == clock());
     // }
