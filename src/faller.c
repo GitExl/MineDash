@@ -52,6 +52,7 @@ void faller_update(const unsigned char index) {
   static unsigned char tile_y;
   static unsigned char local_type;
   static unsigned char local_state;
+  static unsigned char sfx_index;
 
   unsigned char delay = entities.data[index] & FALLER_DATA_DELAY;
   signed char dir_x = 0;
@@ -73,12 +74,16 @@ void faller_update(const unsigned char index) {
     if (local_state == FALLER_STATE_IDLE && !x && !y) {
       tile_index = TILE_INDEX(tile_x, tile_y);
       state = level_tile_evaluate_gravity(tile_index, GF_ABOVE | GF_LEFT | GF_RIGHT | GF_CRUSH);
+      sfx_index = local_type == FALLER_TYPE_ROCK ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT;
       if (state) {
         local_state = state;
         faller_set_state(index, local_state, local_type);
+        if (state != FALLER_STATE_FALL) {
+          sfx_play(sfx_index, 63, 63, 0x10);
+        }
 
       } else {
-        sfx_play(local_type == FALLER_TYPE_ROCK ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT, 63, 63, 0x10);
+        sfx_play(sfx_index, 63, 63, 0x10);
         level_tile_set(tile_x, tile_y, tiles[local_type]);
         entities_free(index);
         return;

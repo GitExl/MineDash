@@ -131,7 +131,8 @@ void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const
 
 void sfx_vera_channel_update(const unsigned char chan) {
   static unsigned char wave_pulse;
-  static unsigned char gain;
+  static unsigned char volume_left;
+  static unsigned char volume_right;
   static unsigned char fq_lo, fq_hi;
 
   const unsigned char sfx_index = sfx_channels.sfx[chan];
@@ -139,19 +140,23 @@ void sfx_vera_channel_update(const unsigned char chan) {
   fq_lo = sfx_channels.frequency[chan] & 0xFF;
   fq_hi = (sfx_channels.frequency[chan] >> 8) & 0xFF;
   wave_pulse = (sfx.waveform_type[sfx_index] << 6) | sfx_channels.pulse_width[chan];
-  gain = sfx_channels.gain[chan];
 
+  // Calculate pan volumes for each side channel.
+  volume_left = ((sfx_channels.gain[chan] * sfx_channels.volume_left[chan]) >> 6) & 0x3F;
+  volume_right = ((sfx_channels.gain[chan] * sfx_channels.volume_right[chan]) >> 6) & 0x3F;
+
+  // Write for both channel, left and right adjacent.
   VERA.address = 0xF9C0 + (chan * 8);
   VERA.address_hi = 0x01 | VERA_INC_1;
 
   VERA.data0 = fq_lo;
   VERA.data0 = fq_hi;
-  VERA.data0 = 0b01000000 | gain;
+  VERA.data0 = 0b01000000 | volume_left;
   VERA.data0 = wave_pulse;
 
   VERA.data0 = fq_lo;
   VERA.data0 = fq_hi;
-  VERA.data0 = 0b10000000 | gain;
+  VERA.data0 = 0b10000000 | volume_right;
   VERA.data0 = wave_pulse;
 }
 
