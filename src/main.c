@@ -11,11 +11,15 @@
 #include "random.h"
 #include "main.h"
 #include "level_names.h"
+#include "sfx.h"
 
 unsigned char game_state = GAMESTATE_LEVEL;
 unsigned char game_action = GAMEACTION_LOAD_LEVEL;
 
-void init() {
+void main() {
+  clock_t start;
+
+
   text_clear();
   text_load();
 
@@ -37,15 +41,12 @@ void init() {
 
   random_init();
 
+  sfx_init();
+  sfx_load("lvl.sfx");
+
   entities_load_states("lvl.sta");
   level_load_graphics();
-}
 
-void main() {
-  clock_t start;
-  // char i;
-
-  init();
 
   while(1) {
     if (game_action != GAMEACTION_NONE) {
@@ -77,6 +78,7 @@ void main() {
     input_read();
     entities_update();
     level_update();
+    sfx_update();
 
     // Center camera on player.
     camerax = (entities.tile_x[entity_player] << 4) + entities.p_x[entity_player] - CAMERA_WIDTH_HALF;
@@ -87,9 +89,7 @@ void main() {
     entities_update_vera_sam();
 
     // Wait for vsync.
-    // for (i = 0; i < 4; i++) {
-      start = clock();
-      do {} while (start == clock());
-    // }
+    start = clock();
+    do {} while (start == clock());
   }
 }

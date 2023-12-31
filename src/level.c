@@ -13,6 +13,8 @@
 #include "tile_names.h"
 #include "level_names.h"
 #include "main.h"
+#include "sfx.h"
+#include "sfx_labels.h"
 
 #include "exit.h"
 #include "player.h"
@@ -327,6 +329,7 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
 
       level_tile_clear(tile_x, tile_y);
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_GOLD_TAKE);
+      sfx_play(SFX_LVL_GOLD_TAKE, 63, 63, 0x20);
       break;
 
     // Diamond.
@@ -342,6 +345,7 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
 
       level_tile_clear(tile_x, tile_y);
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_DIAMOND_TAKE);
+      sfx_play(SFX_LVL_GOLD_TAKE, 63, 63, 0x20);
       break;
   }
 }
@@ -406,6 +410,7 @@ void level_update() {
     if (!level_clock) {
       if (!level_info.time_seconds) {
         if (!level_info.time_minutes) {
+          sfx_play(SFX_LVL_EXPLODE, 63, 63, 0x40);
           entities_set_state(entities_spawn(E_ANIM, entities.tile_x[entity_player], entities.tile_y[entity_player], 0, 0), ST_LVL_EXPLODE);
           entities.data[entity_player] |= PLAYER_DATA_DISABLED;
           entities_set_invisible(entity_player);
@@ -415,6 +420,10 @@ void level_update() {
         }
       } else {
         --level_info.time_seconds;
+
+        if (level_info.time_minutes == 0 && level_info.time_seconds < 15) {
+          sfx_play(SFX_LVL_TIME_OUT, 63, 63, 0x10);
+        }
       }
 
       level_clock = LEVEL_SECOND;

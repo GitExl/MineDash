@@ -1,0 +1,90 @@
+{
+  "EXPLODE": {
+    "waveform_type": 3,
+    "volume_attack_len": 1,
+    "volume_sustain_len": 21,
+    "volume_decay_len": 15,
+    "frequency": 1170,
+    "frequency_sweep_step": -34,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.75
+  },
+  "CRUSH": {
+    "waveform_type": 0,
+    "volume_attack_len": 5,
+    "volume_sustain_len": 18,
+    "volume_decay_len": 9,
+    "frequency": 220,
+    "frequency_sweep_step": -10,
+    "pulse_width": 20,
+    "pulse_width_sweep_time": 4,
+    "volume": 1.0
+  },
+  "GOLD_HIT": {
+    "waveform_type": 1,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 5,
+    "volume_decay_len": 11,
+    "frequency": 2270,
+    "frequency_sweep_step": 0,
+    "pulse_width": 8,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.5
+  },
+  "TIME_OUT": {
+    "waveform_type": 0,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 7,
+    "volume_decay_len": 7,
+    "frequency": 270,
+    "frequency_sweep_step": 0,
+    "pulse_width": 45,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.5
+  },
+  "ROCK_HIT": {
+    "waveform_type": 3,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 5,
+    "volume_decay_len": 9,
+    "frequency": 570,
+    "frequency_sweep_step": -12,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 1
+  },
+  "GOLD_TAKE": {
+    "waveform_type": 0,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 4,
+    "volume_decay_len": 9,
+    "frequency": 1120,
+    "frequency_sweep_step": 0,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.6
+  },
+  "DIG": {
+    "waveform_type": 3,
+    "volume_attack_len": 3,
+    "volume_sustain_len": 0,
+    "volume_decay_len": 11,
+    "frequency": 1570,
+    "frequency_sweep_step": -94,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.3
+  },
+  "DEATH": {
+    "waveform_type": 0,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 15,
+    "volume_decay_len": 6,
+    "frequency": 820,
+    "frequency_sweep_step": -54,
+    "pulse_width": 29,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.75
+  }
+}

@@ -5,6 +5,8 @@
 #include "level.h"
 #include "state_labels.h"
 #include "tile_names.h"
+#include "sfx.h"
+#include "sfx_labels.h"
 
 // States for falling.
 static unsigned char fall_states[] = {
@@ -76,6 +78,7 @@ void faller_update(const unsigned char index) {
         faller_set_state(index, local_state, local_type);
 
       } else {
+        sfx_play(local_type == FALLER_TYPE_ROCK ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT, 63, 63, 0x10);
         level_tile_set(tile_x, tile_y, tiles[local_type]);
         entities_free(index);
         return;

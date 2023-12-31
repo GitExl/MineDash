@@ -7,6 +7,7 @@ from PIL import Image
 
 from binimage import BinImage
 from palette import Palette
+from sfx import SfxList
 from spritegroup import SpriteGroup
 from statelist import StateList
 from tilemap import Tilemap
@@ -304,6 +305,44 @@ def write_state_lists(state_lists: Dict[str, StateList], src: Path, destination:
         f.write('#endif\n')
 
 
+def load_sfx_lists(config) -> Dict[str, SfxList]:
+    sfxs: Dict[str, SfxList] = {}
+
+    for sfx_name, sfx_conf in config['sfx'].items():
+        filename = 'res' / Path(sfx_conf['file'])
+        print('Reading SFX list {} from {}'.format(sfx_name, filename))
+
+        with open(filename, 'r') as f:
+            sfx_data = json.load(f)
+        sfxs[sfx_name] = SfxList(sfx_name, sfx_data)
+
+    return sfxs
+
+
+def write_sfx_lists(sfx_lists: Dict[str, SfxList], src: Path, destination: Path):
+    for sfx_name, sfx_list in sfx_lists.items():
+
+        # Struct data.
+        state_list_path = destination / Path('{}.SFX'.format(sfx_name.upper()))
+        print('Writing SFX list {} to {}'.format(sfx_name,state_list_path))
+        with open(state_list_path, 'wb') as f:
+            sfx_list.write_data(f)
+
+    # State labels.
+    labels_path = src / Path('sfx_labels.h')
+    print('Writing SFX labels to {}'.format(labels_path))
+    with open(labels_path, 'w') as f:
+        f.write('// Auto-generated during build process.\n\n')
+        f.write('#ifndef SFX_LABELS_H\n')
+        f.write('#define SFX_LABELS_H\n\n')
+
+        for sfx_list in sfx_lists.values():
+            sfx_list.write_labels(f)
+        f.write('\n')
+
+        f.write('#endif\n')
+
+
 def run():
     with open('res.json', 'r') as f:
         conf = json.load(f)
@@ -317,6 +356,7 @@ def run():
     tilemaps: Dict[str, Tilemap] = load_tilemaps(conf, tilesets)
     entities: Dict[str, int] = load_entities(conf)
     state_lists: Dict[str, StateList] = load_state_lists(conf, sprite_groups)
+    sfx_lists: Dict[str, SfxList] = load_sfx_lists(conf)
 
     write_palettes(palettes, destination)
     write_tilesets(tilesets, destination, src)
@@ -324,6 +364,7 @@ def run():
     write_tilemaps(tilemaps, destination, src, entities)
     write_entities(entities, src)
     write_state_lists(state_lists, src, destination)
+    write_sfx_lists(sfx_lists, src, destination)
 
 
 if __name__ == '__main__':

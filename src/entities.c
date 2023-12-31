@@ -9,6 +9,8 @@
 #include "random.h"
 #include "level.h"
 #include "state_labels.h"
+#include "sfx.h"
+#include "sfx_labels.h"
 
 #include "player.h"
 #include "digger.h"
@@ -226,6 +228,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
     }
     if (state) {
       entities_set_state(digger, state);
+      sfx_play(SFX_LVL_DIG, 63, 63, 0x10);
     }
 
   // Handle special tiles.
@@ -348,6 +351,7 @@ void entities_crush(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
+        sfx_play(SFX_LVL_CRUSH, 63, 63, 0x40);
         entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;

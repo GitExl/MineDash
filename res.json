@@ -53,6 +53,12 @@
     }
   },
 
+  "sfx": {
+    "LVL": {
+      "file": "lvl_sfx.json"
+    }
+  },
+
   "states": {
     "LVL": {
       "file": "lvl_states.json",
