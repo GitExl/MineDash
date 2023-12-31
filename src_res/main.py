@@ -1,7 +1,9 @@
 from __future__ import annotations
 import json
+import sys
+from math import ceil, floor
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from PIL import Image
 
@@ -343,6 +345,46 @@ def write_sfx_lists(sfx_lists: Dict[str, SfxList], src: Path, destination: Path)
         f.write('#endif\n')
 
 
+def write_pan_curves(src: Path):
+    pan_l: List[float] = []
+    pan_r: List[float] = []
+
+    distx = -1.0
+    while distx <= 1.0:
+        if abs(distx) < 0.001:
+            ax = 0.0
+        else:
+            ax = distx
+
+        vl = 1.0 - abs(ax)
+        vr = 1.0 - abs(ax)
+        if ax < 0:
+            vr = vr * vr * vr * vr * vr
+        elif ax > 0:
+            vl = vl * vl * vl * vl * vl
+
+        pan_l.append(floor(vl * 63))
+        pan_r.append(floor(vr * 63))
+
+        distx += 1.0 / 31
+
+    pan_path = src / Path('sfx_pan.c')
+    print('Writing pan curves to {}'.format(pan_path))
+    with open(pan_path, 'w') as f:
+        f.write('// Auto-generated during build process.\n\n')
+
+        f.write('unsigned char pan_l[64] = {\n')
+        for v in pan_l:
+            f.write('  {},\n'.format(v))
+        f.write('};\n')
+
+        f.write('\n')
+        f.write('unsigned char pan_r[64] = {\n')
+        for v in pan_r:
+            f.write('  {},\n'.format(v))
+        f.write('};\n')
+
+
 def run():
     with open('res.json', 'r') as f:
         conf = json.load(f)
@@ -365,6 +407,7 @@ def run():
     write_entities(entities, src)
     write_state_lists(state_lists, src, destination)
     write_sfx_lists(sfx_lists, src, destination)
+    write_pan_curves(src)
 
 
 if __name__ == '__main__':
