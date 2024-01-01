@@ -15,7 +15,6 @@
 #include "player.h"
 #include "digger.h"
 #include "exit.h"
-#include "anim.h"
 #include "faller.h"
 
 // Entities.
