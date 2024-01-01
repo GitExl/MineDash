@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 960px;
+  width: 100%;
+}
+
+fieldset {
+  padding: 1rem;
+  border: 1px solid #000;
+  margin: 1rem 0;
+}
+
+fieldset p {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0.5rem;
+}
+
+fieldset p:last-child {
+  margin-bottom: 0;
+}
+
+fieldset p label {
+  margin-right: 1rem;
+  min-width: 11rem;
+}
+
+fieldset p input[type=range] {
+  flex-grow: 1;
+}
+
+#serialized {
+  width: 100%;
+  font-family: monospace;
+  height: 11rem;
+}
+
+button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem 0;
+  display: inline-block;
+  cursor: pointer;
+}

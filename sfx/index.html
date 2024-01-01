@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" >
+  <title>VERA PSG</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <fieldset>
+    <legend>Shape</legend>
+
+    <p>
+      <label for="waveform_type_pulse">Pulse</label>
+      <input type="radio" class="psg-value" id="waveform_type_pulse" value="0" name="waveform_type">
+    </p>
+
+    <p>
+      <label for="waveform_type_sawtooth">Sawtooth</label>
+      <input type="radio" class="psg-value" id="waveform_type_sawtooth" value="1" name="waveform_type">
+    </p>
+
+    <p>
+      <label for="waveform_type_triangle">Triangle</label>
+      <input type="radio" class="psg-value" id="waveform_type_triangle" value="2" name="waveform_type">
+    </p>
+
+    <p>
+      <label for="waveform_type_noise">Noise</label>
+      <input type="radio" class="psg-value" id="waveform_type_noise" value="3" name="waveform_type">
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Envelope</legend>
+
+    <p>
+      <label for="volume_attack_len">Attack frames</label>
+      <input type="range" class="psg-value" id="volume_attack_len" name="volume_attack_len" min="0" max="255">
+    </p>
+
+    <p>
+      <label for="volume_sustain_len">Sustain frames</label>
+      <input type="range" class="psg-value" id="volume_sustain_len" name="volume_sustain_len" min="0" max="255">
+    </p>
+
+    <p>
+      <label for="volume_decay_len">Decay frames</label>
+      <input type="range" class="psg-value" id="volume_decay_len" name="volume_decay_len" min="0" max="255">
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Frequency</legend>
+
+    <p>
+      <label for="frequency">Frequency</label>
+      <input type="range" class="psg-value" id="frequency" name="frequency" min="20" max="10000" step="50">
+    </p>
+
+    <p>
+      <label for="frequency_sweep_step">Frequency sweep</label>
+      <input type="range" class="psg-value" id="frequency_sweep_step" name="frequency_sweep_step" min="-94" max="94" step="1">
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Pulse width</legend>
+
+    <p>
+      <label for="pulse_width">Pulse width</label>
+      <input type="range" class="psg-value" id="pulse_width" name="pulse_width" min="0" max="63">
+    </p>
+
+    <p>
+      <label for="pulse_width_sweep_time">Pulse width sweep time</label>
+      <input type="range" class="psg-value" id="pulse_width_sweep_time" name="pulse_width_sweep_time" min="-64" max="63">
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Playback</legend>
+    <button id="button-play">Play</button>
+
+    <p>
+      <label for="volume">Volume</label>
+      <input type="range" class="psg-value-float" id="volume" name="volume" min="0.0" max="1.0" step="0.05">
+    </p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Data</legend>
+    <textarea id="serialized"></textarea>
+
+    <button id="button-randomize">Randomize</button>
+    <button id="button-mutate">Mutate</button>
+    <button id="button-deserialize">Deserialize</button>
+  </fieldset>
+
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="sfxr.js"></script>
+  <script type="text/javascript" src="ui.js"></script>
+</body>
+</html>
