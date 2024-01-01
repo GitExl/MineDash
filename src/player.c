@@ -97,40 +97,60 @@ void player_update(const unsigned char index) {
       local_state = STATE_EXIT;
       is_disabled = PLAYER_DATA_DISABLED;
 
-    // Move up.
-    } else if (input1 & JOY_UP_MASK) {
-      if (!level_tile_is_blocked(tile_x, tile_y - 1)) {
-        local_state = STATE_UP;
-        entities_tile_move(index, 0, -1, 0);
+    // Touch nearby tile.
+    } else if (input1 & JOY_BTN_A_MASK) {
+      if (input1_change & JOY_UP_MASK && input1 & JOY_UP_MASK) {
+        level_tile_touch(tile_x, tile_y - 1, entity_types.flags[E_PLAYER], 0, -1);
+        level_tile_clear(tile_x, tile_y - 1);
+      } else if (input1_change & JOY_DOWN_MASK && input1 & JOY_DOWN_MASK) {
+        level_tile_touch(tile_x, tile_y + 1, entity_types.flags[E_PLAYER], 0, 1);
+        level_tile_clear(tile_x, tile_y + 1);
+      } else if (input1_change & JOY_LEFT_MASK && input1 & JOY_LEFT_MASK) {
+        level_tile_touch(tile_x - 1, tile_y, entity_types.flags[E_PLAYER], -1, 0);
+        level_tile_clear(tile_x - 1, tile_y);
+      } else if (input1_change & JOY_RIGHT_MASK && input1 & JOY_RIGHT_MASK) {
+        level_tile_touch(tile_x + 1, tile_y, entity_types.flags[E_PLAYER], 1, 0);
+        level_tile_clear(tile_x + 1, tile_y);
       }
 
-    // Move down.
-    } else if (input1 & JOY_DOWN_MASK) {
-      if (!level_tile_is_blocked(tile_x, tile_y + 1)) {
-        local_state = STATE_DOWN;
-        entities_tile_move(index, 0, 1, 0);
-      }
+    // Move.
+    } else {
 
-    // Move left.
-    } else if (input1 & JOY_LEFT_MASK) {
-      tile_flags = level_tile_flags(tile_x - 1, tile_y);
-      if (!level_tile_is_blocked(tile_x - 1, tile_y)) {
-        local_state = STATE_LEFT;
-        entities_tile_move(index, -1, 0, 0);
+      // Move up.
+      if (input1 & JOY_UP_MASK) {
+        if (!level_tile_is_blocked(tile_x, tile_y - 1)) {
+          local_state = STATE_UP;
+          entities_tile_move(index, 0, -1, 0);
+        }
 
-      } else if (tile_flags & TILEF_PUSHABLE) {
-        local_state = STATE_PUSH_LEFT_START;
-      }
+      // Move down.
+      } else if (input1 & JOY_DOWN_MASK) {
+        if (!level_tile_is_blocked(tile_x, tile_y + 1)) {
+          local_state = STATE_DOWN;
+          entities_tile_move(index, 0, 1, 0);
+        }
 
-    // Move right.
-    } else if (input1 & JOY_RIGHT_MASK) {
-      tile_flags = level_tile_flags(tile_x + 1, tile_y);
-      if (!level_tile_is_blocked(tile_x + 1, tile_y)) {
-        local_state = STATE_RIGHT;
-        entities_tile_move(index, 1, 0, 0);
+      // Move left.
+      } else if (input1 & JOY_LEFT_MASK) {
+        tile_flags = level_tile_flags(tile_x - 1, tile_y);
+        if (!level_tile_is_blocked(tile_x - 1, tile_y)) {
+          local_state = STATE_LEFT;
+          entities_tile_move(index, -1, 0, 0);
 
-      } else if (tile_flags & TILEF_PUSHABLE) {
-        local_state = STATE_PUSH_RIGHT_START;
+        } else if (tile_flags & TILEF_PUSHABLE) {
+          local_state = STATE_PUSH_LEFT_START;
+        }
+
+      // Move right.
+      } else if (input1 & JOY_RIGHT_MASK) {
+        tile_flags = level_tile_flags(tile_x + 1, tile_y);
+        if (!level_tile_is_blocked(tile_x + 1, tile_y)) {
+          local_state = STATE_RIGHT;
+          entities_tile_move(index, 1, 0, 0);
+
+        } else if (tile_flags & TILEF_PUSHABLE) {
+          local_state = STATE_PUSH_RIGHT_START;
+        }
       }
     }
   }

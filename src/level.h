@@ -73,5 +73,6 @@ void level_hud_build();
 void level_update();
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side);
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction);
+void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, const unsigned char entity_type_flags, const signed char move_x, const signed char move_y);
 
 #endif

@@ -479,3 +479,37 @@ void level_update() {
     level_hud_update = 0;
   }
 }
+
+void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, const unsigned char entity_type_flags, const signed char move_x, const signed char move_y) {
+  static unsigned char state;
+  static unsigned char digger;
+
+  tile_index = TILE_INDEX(tile_x, tile_y);
+
+  // Dig at soft tiles.
+  tile_flags = tileset.flags[map.tile[tile_index]];
+  if (entity_type_flags & ETF_DIGS && tile_flags & TILEF_SOFT) {
+    digger = entities_spawn(E_DIGGER, tile_x, tile_y, 0, 0);
+    state = 0;
+    if (move_x < 0) {
+      state = ST_LVL_DIG_H;
+    } else if (move_x > 0) {
+      state = ST_LVL_DIG_H;
+      entities.flags[digger] = ENTITYF_FLIPX;
+    } else if (move_y < 0) {
+      state = ST_LVL_DIG_V;
+    } else if (move_y > 0) {
+      state = ST_LVL_DIG_V;
+      entities.flags[digger] = ENTITYF_FLIPY;
+    }
+    if (state) {
+      entities_set_state(digger, state);
+      sfx_play(SFX_LVL_DIG, 63, 63, 0x10);
+    }
+
+  // Handle special tiles.
+  } else if (entity_type_flags & ETF_SPECIAL && tile_flags & TILEF_SPECIAL) {
+    level_tile_execute_special(tile_x, tile_y);
+
+  }
+}
