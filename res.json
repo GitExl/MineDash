@@ -35,6 +35,11 @@
       "file": "lvl001.tmj",
       "tileset": "LVL",
       "title": "Funnel"
+    },
+    "LVL002": {
+      "file": "lvl002.tmj",
+      "tileset": "LVL",
+      "title": "Demolition"
     }
   },
 
@@ -42,7 +47,7 @@
     "Player": 0,
     "Faller": 1,
     "Anim": 2,
-    "Dynamite": 3,
+    "TNT": 3,
     "Digger": 4,
     "Exit": 5
   },
@@ -210,9 +215,9 @@
       "bpp": 4,
       "width": 16,
       "height": 16,
-      "x": 64,
-      "y": 112,
-      "count": 3,
+      "x": 0,
+      "y": 48,
+      "count": 8,
       "palette": "MAIN",
       "groups": ["LVL"]
     },

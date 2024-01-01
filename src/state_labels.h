@@ -23,5 +23,7 @@
 #define ST_LVL_DIAMOND 83
 #define ST_LVL_DIAMOND_ROLL 84
 #define ST_LVL_DIAMOND_TAKE 88
+#define ST_LVL_TNT_TAKE 91
+#define ST_LVL_TNT 93
 
 #endif

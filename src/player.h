@@ -17,6 +17,15 @@
 #define PLAYER_DATA_DISABLED    0b00010000
 #define PLAYER_DATA_LOCAL_STATE 0b00001111
 
+
+typedef struct player_info_t {
+  unsigned char entity;
+  unsigned char tnt;
+} player_info_t;
+
+extern player_info_t player;
+
+
 void player_init(const unsigned char index);
 void player_update(const unsigned char index);
 

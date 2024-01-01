@@ -16,6 +16,7 @@
 #include "digger.h"
 #include "exit.h"
 #include "faller.h"
+#include "tnt.h"
 
 // Entities.
 entity_t entities;
@@ -300,6 +301,7 @@ void entities_update() {
     switch (type) {
       case E_PLAYER: player_update(j); break;
       case E_FALLER: faller_update(j); break;
+      case E_TNT: tnt_update(j); break;
     }
   }
 }
@@ -315,6 +317,7 @@ void entities_load(const char* entity_filename) {
   // Configure entity types.
   entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_DIGS | ETF_SPECIAL;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
+  entity_types.flags[E_TNT] = ETF_OWNERSHIP;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -331,6 +334,7 @@ void entities_init_entity(const char index, const char type) {
     case E_PLAYER: player_init(index); break;
     case E_EXIT: exit_init(index); break;
     case E_FALLER: faller_init(index); break;
+    case E_TNT: tnt_init(index); break;
   }
 }
 

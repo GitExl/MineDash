@@ -3,4 +3,5 @@
 char* level_names[] = {
   "tutorial",
   "funnel",
+  "demolition",
 };

@@ -10,6 +10,10 @@
 #include "main.h"
 #include "tile_names.h"
 
+// Local player data.
+player_info_t player;
+
+// Module shared variables.
 static signed char x;
 static signed char y;
 static unsigned char tile_x;

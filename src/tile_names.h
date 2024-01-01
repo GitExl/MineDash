@@ -33,7 +33,7 @@
 #define T_LVL_DIRT_MID 33
 #define T_LVL_EXIT_OPEN 34
 #define T_LVL_EXIT_CLOSED 35
-#define T_LVL_DYNAMITE 36
+#define T_LVL_TNT 36
 #define T_LVL_GOLD 37
 #define T_LVL_DIAMOND 38
 #define T_LVL_DIRT_CAPBOTTOM 40

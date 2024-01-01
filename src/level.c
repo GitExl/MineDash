@@ -27,7 +27,7 @@
 unsigned char level_current = 0;
 
 // Next level to load.
-unsigned char level_next = 0;
+unsigned char level_next = 2;
 
 // Level metadata.
 level_info_t level_info;
@@ -37,9 +37,6 @@ map_t map;
 
 // Tileset metadata.
 tileset_t tileset;
-
-// Player entity index.
-extern unsigned char entity_player;
 
 // Soft dirt tile sides.
 unsigned char dirt_tiles[16] = {
@@ -61,7 +58,7 @@ unsigned char dirt_tiles[16] = {
   T_LVL_DIRT,
 };
 
-// 60Hz timer fgor updating the level clock.
+// 60Hz timer for updating the level clock.
 unsigned char level_clock;
 
 // Set if the HUD needs to be updated this frame.
@@ -150,7 +147,7 @@ void level_load(const unsigned char level) {
 
     // Track player entity index.
     if (entities.type[i] == E_PLAYER) {
-      entity_player = i;
+      player.entity = i;
     }
   }
 }
@@ -347,6 +344,16 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_DIAMOND_TAKE);
       sfx_play(SFX_LVL_GOLD_TAKE, 63, 63, 0x20);
       break;
+
+    // TNT.
+    case T_LVL_TNT:
+      player.tnt++;
+      level_hud_update = 1;
+
+      level_tile_clear(tile_x, tile_y);
+      entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_TNT_TAKE);
+      sfx_play(SFX_LVL_TIME_OUT, 63, 63, 0x20);
+      break;
   }
 }
 
@@ -370,22 +377,23 @@ void level_tile_evaluate_dirt(const unsigned char tile_x, const unsigned char ti
 
   // Determines a pattern of 4 tiles around this tile.
   pattern = 0;
-  tile_index = TILE_INDEX(tile_x, tile_y - 1);
+  tile_index -= MAP_WIDTH;
   if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b1000;
   }
-  tile_index = TILE_INDEX(tile_x, tile_y + 1);
-  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
-    pattern |= 0b0100;
-  }
-  tile_index = TILE_INDEX(tile_x - 1, tile_y);
+  tile_index += MAP_WIDTH - 1;
   if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0010;
   }
-  tile_index = TILE_INDEX(tile_x + 1, tile_y);
+  tile_index += 2;
   if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
     pattern |= 0b0001;
   }
+  tile_index += MAP_WIDTH - 1;
+  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
+    pattern |= 0b0100;
+  }
+
   level_tile_set(tile_x, tile_y, dirt_tiles[pattern]);
 }
 
@@ -396,6 +404,7 @@ void level_hud_build() {
 
   text_write(1, 27, 0b11110011, "\x001");
   text_write(1, 28, 0b11110011, "\x002");
+  text_write(12, 27, 0b11110011, "\x003");
   text_write(39 - title_len, 27, 0b11110011, level_names[level_current]);
 }
 
@@ -403,10 +412,11 @@ void level_update() {
   static unsigned char o;
   static char s[] = "     \x000";
   static char t[] = "00:00";
+  static char tt[] = "0  ";
 
   // Update sfx listener position to player.
-  sfx_listen_x = entities.tile_x[entity_player];
-  sfx_listen_y = entities.tile_y[entity_player];
+  sfx_listen_x = entities.tile_x[player.entity];
+  sfx_listen_y = entities.tile_y[player.entity];
 
   // Advance clock.
   if (!(entities.data[entity_player] & PLAYER_DATA_DISABLED)) {
@@ -456,8 +466,15 @@ void level_update() {
     o = level_info.time_seconds > 9 ? 3 : 4;
     utoa(level_info.time_seconds, &t[o], 10);
     t[2] = ':';
-
     text_write(3, 28, 0b11110010, t);
+
+    // TNT.
+    tt[0] = ' ';
+    tt[1] = ' ';
+    tt[2] = ' ';
+    text_write(14, 27, 0b11110010, tt);
+    utoa(player.tnt, &tt[0], 10);
+    text_write(14, 27, 0b11110010, tt);
 
     level_hud_update = 0;
   }
