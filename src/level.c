@@ -404,6 +404,10 @@ void level_update() {
   static char s[] = "     \x000";
   static char t[] = "00:00";
 
+  // Update sfx listener position to player.
+  sfx_listen_x = entities.tile_x[entity_player];
+  sfx_listen_y = entities.tile_y[entity_player];
+
   // Advance clock.
   if (!(entities.data[entity_player] & PLAYER_DATA_DISABLED)) {
     --level_clock;

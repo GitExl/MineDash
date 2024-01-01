@@ -79,11 +79,11 @@ void faller_update(const unsigned char index) {
         local_state = state;
         faller_set_state(index, local_state, local_type);
         if (state != FALLER_STATE_FALL) {
-          sfx_play(sfx_index, 63, 63, 0x10);
+          sfx_play_pan(sfx_index, 0x10, tile_x, tile_y);
         }
 
       } else {
-        sfx_play(sfx_index, 63, 63, 0x10);
+        sfx_play_pan(sfx_index, 0x10, tile_x, tile_y);
         level_tile_set(tile_x, tile_y, tiles[local_type]);
         entities_free(index);
         return;

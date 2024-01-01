@@ -2,12 +2,16 @@
 #include <cx16.h>
 
 #include "sfx.h"
+#include "sfx_pan.h"
 
 sfx_t sfx;
 
 sfx_channel_t sfx_channels;
 
 unsigned char sfx_frame = 0;
+
+unsigned char sfx_listen_x = 0;
+unsigned char sfx_listen_y = 0;
 
 static unsigned char i;
 
@@ -98,6 +102,23 @@ void sfx_update() {
   }
 
   ++sfx_frame;
+}
+
+void sfx_play_pan(const unsigned char sfx_index, const unsigned char priority, const unsigned char source_x, const unsigned char source_y) {
+  const unsigned char distx = (sfx_listen_x - source_x) + 64;
+  unsigned char vol_left = pan_l[distx];
+  unsigned char vol_right = pan_r[distx];
+
+  // Attenuate based on vertical distance.
+  signed char disty = (sfx_listen_y - source_y);
+  if (disty < 0) {
+    disty = -disty;
+  }
+  disty = 63 - (disty & 0x3F);
+  vol_left = (disty * vol_left) >> 6;
+  vol_right = (disty * vol_right) >> 6;
+
+  sfx_play(sfx_index, vol_left, vol_right, priority);
 }
 
 void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const unsigned char vol_right, const unsigned char priority) {

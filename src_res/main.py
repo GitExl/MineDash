@@ -358,28 +358,28 @@ def write_pan_curves(src: Path):
 
         vl = 1.0 - abs(ax)
         vr = 1.0 - abs(ax)
-        if ax < 0:
+        if ax > 0:
             vr = vr * vr * vr * vr * vr
-        elif ax > 0:
+        elif ax < 0:
             vl = vl * vl * vl * vl * vl
 
         pan_l.append(floor(vl * 63))
         pan_r.append(floor(vr * 63))
 
-        distx += 1.0 / 31
+        distx += 1.0 / 63
 
     pan_path = src / Path('sfx_pan.c')
     print('Writing pan curves to {}'.format(pan_path))
     with open(pan_path, 'w') as f:
         f.write('// Auto-generated during build process.\n\n')
 
-        f.write('unsigned char pan_l[64] = {\n')
+        f.write('unsigned char pan_l[128] = {\n')
         for v in pan_l:
             f.write('  {},\n'.format(v))
         f.write('};\n')
 
         f.write('\n')
-        f.write('unsigned char pan_r[64] = {\n')
+        f.write('unsigned char pan_r[128] = {\n')
         for v in pan_r:
             f.write('  {},\n'.format(v))
         f.write('};\n')

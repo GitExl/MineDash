@@ -82,9 +82,15 @@ typedef struct sfx_channel_t {
 extern sfx_channel_t sfx_channels;
 
 
+// Listener position.
+extern unsigned char sfx_listen_x;
+extern unsigned char sfx_listen_y;
+
+
 void sfx_init();
 void sfx_load(const char* filename);
 void sfx_update();
+void sfx_play_pan(const unsigned char sfx_index, const unsigned char priority, const unsigned char source_x, const unsigned char source_y);
 void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const unsigned char vol_right, const unsigned char priority);
 void sfx_vera_channel_update(const unsigned char chan);
 void sfx_vera_channel_stop(const unsigned char chan);
