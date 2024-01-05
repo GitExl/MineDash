@@ -3,5 +3,6 @@
 
 void tnt_init(const unsigned char index);
 void tnt_update(const unsigned char index);
+void tnt_destroy(const unsigned char index);
 
 #endif

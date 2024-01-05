@@ -11,6 +11,7 @@ class StateFlags:
     REPEAT_RANDOM = 0x01
     INVISIBLE = 0x02
     DESTROY = 0x04
+    EXPLODE_TILE = 0x08
 
 
 class State:
@@ -34,6 +35,8 @@ class State:
                     flags |= StateFlags.INVISIBLE
                 elif flag_str == 'DESTROY':
                     flags |= StateFlags.DESTROY
+                elif flag_str == 'EXPLODE_TILE':
+                    flags |= StateFlags.EXPLODE_TILE
                 else:
                     raise Exception('Unknown state flag {}'.format(flag_str))
 

@@ -50,6 +50,7 @@ extern entity_type_t entity_types;
 #define STATEF_RANDOM_REPEAT 0x01   // 50% chance to repeat this state.
 #define STATEF_INVISIBLE     0x02   // This state is invisible.
 #define STATEF_DESTROY       0x04   // The entity will be destroyed after this state.
+#define STATEF_EXPLODE_TILE  0x08   // The entity will explode the tile it is on.
 
 typedef struct entity_states_t {
 
@@ -84,5 +85,6 @@ void entities_set_invisible(const unsigned char index);
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index);
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags);
 void entities_crush(const unsigned char entity);
+void entities_explode(const unsigned char entity);
 
 #endif

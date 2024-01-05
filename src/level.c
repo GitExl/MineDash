@@ -141,7 +141,7 @@ void level_load(const unsigned char level) {
     // Set tile ownership.
     type_flags = entity_types.flags[entities.type[i]];
     if (type_flags & ETF_OWNERSHIP) {
-      tile_index = TILE_INDEX(entities.tile_x[i], entities.tile_x[i]);
+      tile_index = TILE_INDEX(entities.tile_x[i], entities.tile_y[i]);
       map.owner[tile_index] = i;
     }
 
@@ -414,10 +414,6 @@ void level_update() {
   static char t[] = "00:00";
   static char tt[] = "0  ";
 
-  // Update sfx listener position to player.
-  sfx_listen_x = entities.tile_x[player.entity];
-  sfx_listen_y = entities.tile_y[player.entity];
-
   // Advance clock.
   if (!(entities.data[entity_player] & PLAYER_DATA_DISABLED)) {
     --level_clock;
@@ -512,4 +508,53 @@ void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, co
     level_tile_execute_special(tile_x, tile_y);
 
   }
+}
+
+const unsigned char EXPLODE_X_CHANGE[] = {0, 1, 2, 0, 1, 2, 0, 1, 2};
+const unsigned char EXPLODE_Y_CHANGE[] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
+const unsigned char EXPLODE_COUNTER[] = {6, 10, 6, 10, 14, 10, 6, 10, 6};
+
+void level_tile_start_explosion(unsigned char x, unsigned char y) {
+  static unsigned char i;
+  static unsigned char entity;
+  static unsigned char lx;
+  static unsigned char ly;
+
+  sfx_play_pan(SFX_LVL_EXPLODE, 0x50, x, y);
+
+  x -= 1;
+  y -= 1;
+
+  for (i = 0; i < 9; i++) {
+    lx = x + EXPLODE_X_CHANGE[i];
+    ly = y + EXPLODE_Y_CHANGE[i];
+
+    tile_index = TILE_INDEX(lx, ly);
+    tile = map.tile[tile_index];
+    if (!tile || tileset.flags[tile] & TILEF_DESTRUCTIBLE) {
+      entity = entities_spawn(E_ANIM, lx, ly, 0, 0);
+      entities_set_state(entity, ST_LVL_EXPLODE);
+      entities.counter[entity] = EXPLODE_COUNTER[i];
+    }
+  }
+}
+
+void level_tile_explode(unsigned char x, unsigned char y) {
+  static unsigned char entity;
+
+  tile_index = TILE_INDEX(x, y);
+
+  // Kill entities.
+  entity = map.owner[tile_index];
+  if (entity != 0xFF) {
+    entities_explode(entity);
+  }
+
+  // Explosive tiles.
+  tile = map.tile[tile_index];
+  if (tile == T_LVL_TNT) {
+    level_tile_start_explosion(x, y);
+  }
+
+  level_tile_clear(x, y);
 }

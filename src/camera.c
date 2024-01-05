@@ -1,6 +1,7 @@
 #include <cx16.h>
 
 #include "camera.h"
+#include "sfx.h"
 #include "level.h"
 
 signed int camerax = 0;
@@ -23,4 +24,8 @@ void camera_update() {
 
   VERA.layer0.hscroll = camerax;
   VERA.layer0.vscroll = cameray;
+
+  // Update sfx listener position to player.
+  sfx_listen_x = (camerax + CAMERA_WIDTH_HALF) >> 4;
+  sfx_listen_y = (cameray + CAMERA_HEIGHT_HALF) >> 4;
 }

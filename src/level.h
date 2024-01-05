@@ -52,6 +52,8 @@ extern unsigned char entity_player;
 extern unsigned char level_current;
 extern unsigned char level_next;
 
+extern unsigned char level_hud_update;
+
 
 #define GF_ABOVE 0x01
 #define GF_LEFT  0x02
@@ -74,5 +76,7 @@ void level_update();
 unsigned char level_tile_can_roll(unsigned int tile_index, const signed char side);
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction);
 void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, const unsigned char entity_type_flags, const signed char move_x, const signed char move_y);
+void level_tile_explode(unsigned char x, unsigned char y);
+void level_tile_start_explosion(unsigned char x, unsigned char y);
 
 #endif

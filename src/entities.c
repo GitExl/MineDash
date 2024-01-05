@@ -91,6 +91,7 @@ void entities_free(const unsigned char index) {
   type = entities.type[index];
   switch (type) {
     case E_DIGGER: digger_destroy(index); break;
+    case E_TNT: tnt_destroy(index); break;
   }
 
   // Disable VERA sprite.
@@ -199,12 +200,17 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
 
   dest_tile_x = tile_x + move_x;
   dest_tile_y = tile_y + move_y;
-  dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
 
   // Move tile ownership.
   if (type_flags & ETF_OWNERSHIP) {
     tile_index = TILE_INDEX(tile_x, tile_y);
-    map.owner[tile_index] = 0xFF;
+
+    // Only clear actual ownership. Helps with TNT placement.
+    if (map.owner[tile_index] == entity) {
+      map.owner[tile_index] = 0xFF;
+    }
+
+    dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
     map.owner[dest_tile_index] = entity;
   }
 
@@ -247,10 +253,16 @@ void entities_update() {
           continue;
         }
 
+        // Explode tile.
+        if (state_flags & STATEF_EXPLODE_TILE) {
+          level_tile_explode(entities.tile_x[j], entities.tile_y[j]);
+        }
+
         // Repeat state 50% of the time.
         if (!(state_flags & STATEF_RANDOM_REPEAT && (RANDOM & 0x80))) {
           state = entity_states.next[state];
         }
+
         entities_set_state(j, state);
       } else {
         entities.counter[j] = counter;
@@ -290,7 +302,7 @@ void entities_load(const char* entity_filename) {
   // Configure entity types.
   entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_DIGS | ETF_SPECIAL;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
-  entity_types.flags[E_TNT] = ETF_OWNERSHIP;
+  entity_types.flags[E_TNT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -330,6 +342,33 @@ void entities_crush(const unsigned char entity) {
         sfx_play(SFX_LVL_CRUSH, 63, 63, 0x40);
         entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
+        break;
+
+      case E_TNT:
+        level_tile_start_explosion(entities.tile_x[entity], entities.tile_y[entity]);
+        break;
+    }
+
+    tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
+    map.owner[tile_index] = 0xFF;
+  }
+}
+
+void entities_explode(const unsigned char entity) {
+  static unsigned char type;
+  static unsigned int tile_index;
+
+  type = entities.type[entity];
+  if (entity_types.flags[type] & ETF_CRUSHABLE) {
+    switch (type) {
+      case E_PLAYER:
+        sfx_play(SFX_LVL_DEATH, 63, 63, 0x40);
+        entities_set_state(entity, ST_LVL_PLAYER_BURN);
+        entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
+        break;
+
+      case E_TNT:
+        level_tile_start_explosion(entities.tile_x[entity], entities.tile_y[entity]);
         break;
     }
 

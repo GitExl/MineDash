@@ -9,6 +9,9 @@
 #include "level.h"
 #include "main.h"
 #include "tile_names.h"
+#include "sfx.h"
+#include "sfx_labels.h"
+#include "text.h"
 
 // Local player data.
 player_info_t player;
@@ -23,6 +26,9 @@ static unsigned char state;
 static unsigned char tile_flags;
 static unsigned char local_state;
 static unsigned char is_disabled;
+static unsigned int tile_index;
+static unsigned char map_tile;
+static unsigned char map_owner;
 
 void player_init(const unsigned char index) {
   entities.data[index] = STATE_IDLE;
@@ -91,67 +97,64 @@ void player_update(const unsigned char index) {
 
   // Player movement, if not already moving.
   if (local_state == STATE_IDLE && !is_disabled) {
+    tile_index = TILE_INDEX(tile_x, tile_y);
+    map_tile = map.tile[tile_index];
+    map_owner = map.owner[tile_index];
 
     // Exit.
-    if (map.tile[TILE_INDEX(tile_x, tile_y)] == T_LVL_EXIT_OPEN) {
+    if (map_tile == T_LVL_EXIT_OPEN) {
       local_state = STATE_EXIT;
       is_disabled = PLAYER_DATA_DISABLED;
 
-    // Touch nearby tile.
-    } else if (input1 & JOY_BTN_A_MASK) {
+    // Touch nearby tile by pressing A + Direction.
+    } else if (input1 & JOY_BTN_B_MASK) {
       if (input1_change & JOY_UP_MASK && input1 & JOY_UP_MASK) {
         level_tile_touch(tile_x, tile_y - 1, entity_types.flags[E_PLAYER], 0, -1);
-        level_tile_clear(tile_x, tile_y - 1);
       } else if (input1_change & JOY_DOWN_MASK && input1 & JOY_DOWN_MASK) {
         level_tile_touch(tile_x, tile_y + 1, entity_types.flags[E_PLAYER], 0, 1);
-        level_tile_clear(tile_x, tile_y + 1);
       } else if (input1_change & JOY_LEFT_MASK && input1 & JOY_LEFT_MASK) {
         level_tile_touch(tile_x - 1, tile_y, entity_types.flags[E_PLAYER], -1, 0);
-        level_tile_clear(tile_x - 1, tile_y);
       } else if (input1_change & JOY_RIGHT_MASK && input1 & JOY_RIGHT_MASK) {
         level_tile_touch(tile_x + 1, tile_y, entity_types.flags[E_PLAYER], 1, 0);
-        level_tile_clear(tile_x + 1, tile_y);
       }
 
-    // Move.
-    } else {
+    // Drop TNT by pressing down B.
+    } else if (player.tnt && map_owner == index && input2_change & JOY_BTN_A_MASK && input2 & JOY_BTN_A_MASK) {
+      --player.tnt;
+      level_hud_update = 1;
+      entities_spawn(E_TNT, tile_x, tile_y, 0, 0);
+      sfx_play(SFX_LVL_TIME_OUT, 63, 63, 0x40);
 
-      // Move up.
+    // Move or push when D-pad is down.
+    } else {
       if (input1 & JOY_UP_MASK) {
         if (!level_tile_is_blocked(tile_x, tile_y - 1)) {
           local_state = STATE_UP;
           entities_tile_move(index, 0, -1, 0);
         }
-
-      // Move down.
       } else if (input1 & JOY_DOWN_MASK) {
         if (!level_tile_is_blocked(tile_x, tile_y + 1)) {
           local_state = STATE_DOWN;
           entities_tile_move(index, 0, 1, 0);
         }
-
-      // Move left.
       } else if (input1 & JOY_LEFT_MASK) {
         tile_flags = level_tile_flags(tile_x - 1, tile_y);
         if (!level_tile_is_blocked(tile_x - 1, tile_y)) {
           local_state = STATE_LEFT;
           entities_tile_move(index, -1, 0, 0);
-
         } else if (tile_flags & TILEF_PUSHABLE) {
           local_state = STATE_PUSH_LEFT_START;
         }
-
-      // Move right.
       } else if (input1 & JOY_RIGHT_MASK) {
         tile_flags = level_tile_flags(tile_x + 1, tile_y);
         if (!level_tile_is_blocked(tile_x + 1, tile_y)) {
           local_state = STATE_RIGHT;
           entities_tile_move(index, 1, 0, 0);
-
         } else if (tile_flags & TILEF_PUSHABLE) {
           local_state = STATE_PUSH_RIGHT_START;
         }
       }
+
     }
   }
 
