@@ -220,15 +220,7 @@ unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned c
 
   tile = map.tile[tile_index];
   tile_flags = tileset.flags[tile];
-  if (tile_flags & TILEF_BLOCKS) {
-    return 1;
-  }
-
-  if (map.owner[tile_index] != 0xFF) {
-    return 1;
-  }
-
-  return 0;
+  return (tile_flags & TILEF_BLOCKS) || (map.owner[tile_index] != 0xFF);
 }
 
 void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
@@ -352,7 +344,7 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
 
       level_tile_clear(tile_x, tile_y);
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_TNT_TAKE);
-      sfx_play(SFX_LVL_TIME_OUT, 63, 63, 0x20);
+      sfx_play(SFX_LVL_TNT_TAKE, 63, 63, 0x20);
       break;
   }
 }
@@ -512,7 +504,6 @@ void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, co
 
 const unsigned char EXPLODE_X_CHANGE[] = {0, 1, 2, 0, 1, 2, 0, 1, 2};
 const unsigned char EXPLODE_Y_CHANGE[] = {0, 0, 0, 1, 1, 1, 2, 2, 2};
-const unsigned char EXPLODE_COUNTER[] = {6, 10, 6, 10, 14, 10, 6, 10, 6};
 
 void level_tile_start_explosion(unsigned char x, unsigned char y) {
   static unsigned char i;
@@ -534,7 +525,6 @@ void level_tile_start_explosion(unsigned char x, unsigned char y) {
     if (!tile || tileset.flags[tile] & TILEF_DESTRUCTIBLE) {
       entity = entities_spawn(E_ANIM, lx, ly, 0, 0);
       entities_set_state(entity, ST_LVL_EXPLODE);
-      entities.counter[entity] = EXPLODE_COUNTER[i];
     }
   }
 }

@@ -28,5 +28,6 @@ extern player_info_t player;
 
 void player_init(const unsigned char index);
 void player_update(const unsigned char index);
+void player_place_tnt(const unsigned char x, const unsigned char y);
 
 #endif

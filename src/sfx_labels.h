@@ -11,5 +11,7 @@
 #define SFX_LVL_GOLD_TAKE 5
 #define SFX_LVL_DIG 6
 #define SFX_LVL_DEATH 7
+#define SFX_LVL_TNT_TICK 8
+#define SFX_LVL_TNT_TAKE 9
 
 #endif

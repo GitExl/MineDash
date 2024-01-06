@@ -17,9 +17,10 @@ class SfxWaveform(Enum):
 
 
 class Sfx:
-    def __init__(self, data):
-        self.waveform: SfxWaveform = SfxWaveform(data['waveform_type'])
+    def __init__(self, name: str, data):
+        self.name = name
 
+        self.waveform: SfxWaveform = SfxWaveform(data['waveform_type'])
         self.pulse_width: int = data['pulse_width']
 
         # pulse_width_sweep_step_time subtracted by one so that we can AND it for a quick modulo check.
@@ -63,6 +64,20 @@ class Sfx:
         self.volume_decay_step: int = ceil(decay_step)
         self.volume_decay_step_len: int = ceil(decay_step_len)
 
+        total_len = (ceil(self.volume / self.volume_attack_step) * self.volume_attack_step_len) + self.volume_sustain_len + (ceil(self.volume / self.volume_decay_step) * self.volume_decay_step_len) + 3
+
+        sweep_total = self.frequency_sweep_step * total_len
+        if not self.frequency_sweep_direction:
+            sweep_total = -sweep_total
+        if self.frequency + sweep_total < 0 or self.frequency + sweep_total > 65535:
+            print('** Warning: SFX {} frequency sweep will probably wrap.'.format(self.name))
+
+        if pulse_width_sweep_step_time:
+            pulse_total = ceil(total_len / self.pulse_width_sweep_step_time)
+            if not self.pulse_width_sweep_direction:
+                pulse_total = -pulse_total
+            if self.pulse_width + pulse_total < 0 or self.pulse_width + pulse_total > 63:
+                print('** Warning: SFX {} pulse sweep will probably wrap.'.format(self.name))
 
 class SfxList:
 
@@ -71,7 +86,7 @@ class SfxList:
         self._sfx: Dict[str, Sfx] = {}
 
         for name, sfx_data in data.items():
-            self._sfx[name] = Sfx(sfx_data)
+            self._sfx[name] = Sfx(name, sfx_data)
 
     def write_labels(self, f: TextIO):
         for index, label in enumerate(self._sfx.keys()):

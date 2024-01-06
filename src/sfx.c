@@ -76,16 +76,17 @@ void sfx_update() {
     }
 
     // Pulse width sweep.
-    if (sfx_frame & sfx.pulse_width_sweep_step_time[sfx_index]) {
-      if (sfx.frequency_sweep_direction[sfx_index]) {
-        ++pulse_width;
-      } else {
-        --pulse_width;
+    if (sfx.pulse_width_sweep_step_time[sfx_index]) {
+      if (!(sfx_frame & sfx.pulse_width_sweep_step_time[sfx_index])) {
+        if (sfx.frequency_sweep_direction[sfx_index]) {
+          ++pulse_width;
+        } else {
+          --pulse_width;
+        }
       }
     }
 
     // Frequency sweep.
-    // TODO: frequency step is in Hz, frequency value is not
     if (sfx.frequency_sweep_direction[sfx_index]) {
       frequency += sfx.frequency_sweep_step[sfx_index];
     } else {
