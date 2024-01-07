@@ -12,7 +12,7 @@ void info_show() {
 
     case 1:
       text_write(10, 11, 0b10001010, "use \x08A+\x08F to touch");
-      text_write(10, 12, 0b10001010, "the tile next to you.");
+      text_write(10, 12, 0b10001010, "a nearby tile.");
       break;
 
     case 2:
@@ -22,7 +22,7 @@ void info_show() {
       break;
 
     default:
-      text_write(10, 10, 0b10001010, "no info for this level");
+      text_write(10, 10, 0b10001010, "nope");
   }
 
   text_write(27, 15, 0b10001001, "\x08C\x08D\x08E");

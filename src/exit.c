@@ -21,7 +21,7 @@ void exit_init(const unsigned char index) {
   entities.counter[index] = 0;
 
   // Put down closed exit tile.
-  level_tile_set(entities.tile_x[index], entities.tile_y[index], 35);
+  level_tile_set(TILE_INDEX(entities.tile_x[index], entities.tile_y[index]), 35);
 
   // Register as one of the exits.
   exits[exit_count] = index;
@@ -33,7 +33,7 @@ void exit_open() {
 
   for (i = 0; i < exit_count; i++) {
     exit_index = exits[i];
-    level_tile_set(entities.tile_x[exit_index], entities.tile_y[exit_index], 34);
+    level_tile_set(TILE_INDEX(entities.tile_x[exit_index], entities.tile_y[exit_index]), 34);
     entities_set_state(exit_index, ST_LVL_SPARK);
   }
 }

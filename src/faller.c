@@ -44,7 +44,7 @@ void faller_init(const unsigned char index) {
   local_type = (entities.data[index] & FALLER_DATA_TYPE) >> 2;
 
   entities_set_state(index, fall_states[local_type]);
-  level_tile_set(tile_x, tile_y, 0);
+  level_tile_set(TILE_INDEX(tile_x, tile_y), 0);
 }
 
 void faller_update(const unsigned char index) {
@@ -84,7 +84,7 @@ void faller_update(const unsigned char index) {
 
       } else {
         sfx_play_pan(sfx_index, 0x10, tile_x, tile_y);
-        level_tile_set(tile_x, tile_y, tiles[local_type]);
+        level_tile_set(tile_index, tiles[local_type]);
         entities_free(index);
         return;
 
@@ -115,7 +115,7 @@ void faller_update(const unsigned char index) {
         local_state = FALLER_STATE_IDLE;
 
       } else {
-        level_tile_set(tile_x, tile_y, tiles[local_type]);
+        level_tile_set(tile_index, tiles[local_type]);
         entities_free(index);
         return;
       }

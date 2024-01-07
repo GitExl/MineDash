@@ -223,7 +223,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   entities.tile_y[entity] = dest_tile_y;
 
   if (move_flags & TILE_MOVE_NO_EVALUATE) {
-    level_tile_set(tile_x, tile_y, 0);
+    level_tile_set(TILE_INDEX(tile_x, tile_y), 0);
   } else {
     level_tile_clear(tile_x, tile_y);
   }
@@ -342,7 +342,7 @@ void entities_crush(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play_pan(SFX_LVL_CRUSH, tile_x, tile_y, 0x40);
+        sfx_play_pan(SFX_LVL_CRUSH, tile_x, tile_y, 0x90);
         entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;

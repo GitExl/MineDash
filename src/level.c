@@ -38,26 +38,6 @@ map_t map;
 // Tileset metadata.
 tileset_t tileset;
 
-// Soft dirt tile sides.
-unsigned char dirt_tiles[16] = {
-  T_LVL_DIRT_MID,
-  T_LVL_DIRT_CAPLEFT,
-  T_LVL_DIRT_CAPRIGHT,
-  T_LVL_DIRT_HORIZONTAL,
-  T_LVL_DIRT_CAPTOP,
-  T_LVL_DIRT_TOPLEFT,
-  T_LVL_DIRT_TOPRIGHT,
-  T_LVL_DIRT_TOP,
-  T_LVL_DIRT_CAPBOTTOM,
-  T_LVL_DIRT_BOTTOMLEFT,
-  T_LVL_DIRT_BOTTOMRIGHT,
-  T_LVL_DIRT_BOTTOM,
-  T_LVL_DIRT_VERTICAL,
-  T_LVL_DIRT_LEFT,
-  T_LVL_DIRT_RIGHT,
-  T_LVL_DIRT,
-};
-
 // 60Hz timer for updating the level clock.
 unsigned char level_clock;
 
@@ -170,10 +150,45 @@ void level_load_graphics() {
   cbm_k_load(0, (unsigned int)&tileset);
 }
 
+const unsigned char DIRT_OFFSETS[] = {
+  MAP_WIDTH - 1,
+  2,
+  MAP_WIDTH - 1,
+  0,
+};
+const unsigned char DIRT_PATTERNS[] = {
+  0b1000,
+  0b0010,
+  0b0001,
+  0b0100,
+};
+const unsigned char DIRT_TILES[16] = {
+  T_LVL_DIRT_MID,
+  T_LVL_DIRT_CAPLEFT,
+  T_LVL_DIRT_CAPRIGHT,
+  T_LVL_DIRT_HORIZONTAL,
+  T_LVL_DIRT_CAPTOP,
+  T_LVL_DIRT_TOPLEFT,
+  T_LVL_DIRT_TOPRIGHT,
+  T_LVL_DIRT_TOP,
+  T_LVL_DIRT_CAPBOTTOM,
+  T_LVL_DIRT_BOTTOMLEFT,
+  T_LVL_DIRT_BOTTOMRIGHT,
+  T_LVL_DIRT_BOTTOM,
+  T_LVL_DIRT_VERTICAL,
+  T_LVL_DIRT_LEFT,
+  T_LVL_DIRT_RIGHT,
+  T_LVL_DIRT,
+};
 void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
-  level_tile_set(tile_x, tile_y, 0);
+  register unsigned char i, j;
+  unsigned int tile_index_check;
+  unsigned int tile_index;
+  unsigned char map_tile;
 
-  // Check for gravity objects abive and to the sides of the tile.
+  level_tile_set(TILE_INDEX(tile_x, tile_y), 0);
+
+  // Check for gravity objects above and to the sides of the tile.
   level_tile_evaluate_faller(tile_x, tile_y - 1, GF_ABOVE);
   level_tile_evaluate_faller(tile_x - 1, tile_y, GF_LEFT);
   level_tile_evaluate_faller(tile_x - 1, tile_y - 1, GF_LEFT);
@@ -181,10 +196,28 @@ void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y) {
   level_tile_evaluate_faller(tile_x + 1, tile_y - 1, GF_RIGHT);
 
   // Evaluate dirt tiles that should have soft borders.
-  level_tile_evaluate_dirt(tile_x, tile_y - 1);
-  level_tile_evaluate_dirt(tile_x, tile_y + 1);
-  level_tile_evaluate_dirt(tile_x - 1, tile_y);
-  level_tile_evaluate_dirt(tile_x + 1, tile_y);
+  tile_index_check = TILE_INDEX(tile_x, tile_y - 1);
+  for (i = 0; i < 4; i++) {
+
+    // Only process soft tiles.
+    map_tile = map.tile[tile_index_check];
+    if (tileset.flags[map_tile] & TILEF_SOFT) {
+
+      // Determines a pattern from 4 dirt tiles around this tile.
+      pattern = 0;
+      tile_index = tile_index_check - MAP_WIDTH;
+      for (j = 0; j < 4; j++) {
+        map_tile = map.tile[tile_index];
+        if (tileset.flags[map_tile] & TILEF_SOFT) {
+          pattern |= DIRT_PATTERNS[j];
+        }
+        tile_index += DIRT_OFFSETS[j];
+      }
+      level_tile_set(tile_index_check, DIRT_TILES[pattern]);
+    }
+
+    tile_index_check += DIRT_OFFSETS[i];
+  }
 }
 
 unsigned char level_tile_push(const unsigned char tile_x, const unsigned char tile_y, const signed char direction) {
@@ -354,44 +387,13 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
   level_tile_clear(tile_x, tile_y);
 }
 
-void level_tile_set(const unsigned char tile_x, const unsigned char tile_y, const unsigned char tile) {
-  tile_index = TILE_INDEX(tile_x, tile_y);
+void level_tile_set(const unsigned int tile_index, const unsigned char tile) {
   map.tile[tile_index] = tile;
 
   VERA.address = 0x8000 + tile_index * 2;
   VERA.address_hi = VERA_INC_1;
   VERA.data0 = tile;
   VERA.data0 = tileset.palette[tile] << 4;
-}
-
-void level_tile_evaluate_dirt(const unsigned char tile_x, const unsigned char tile_y) {
-
-  // Only process soft tiles.
-  tile_index = TILE_INDEX(tile_x, tile_y);
-  if (!(tileset.flags[map.tile[tile_index]] & TILEF_SOFT)) {
-    return;
-  }
-
-  // Determines a pattern of 4 tiles around this tile.
-  pattern = 0;
-  tile_index -= MAP_WIDTH;
-  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
-    pattern |= 0b1000;
-  }
-  tile_index += MAP_WIDTH - 1;
-  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
-    pattern |= 0b0010;
-  }
-  tile_index += 2;
-  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
-    pattern |= 0b0001;
-  }
-  tile_index += MAP_WIDTH - 1;
-  if (tileset.flags[map.tile[tile_index]] & TILEF_SOFT) {
-    pattern |= 0b0100;
-  }
-
-  level_tile_set(tile_x, tile_y, dirt_tiles[pattern]);
 }
 
 void level_hud_build() {
@@ -497,7 +499,7 @@ void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, co
     }
     if (state) {
       entities_set_state(digger, state);
-      sfx_play_pan(SFX_LVL_DIG, tile_x, tile_y, 0x10);
+      sfx_play_pan(SFX_LVL_DIG, tile_x, tile_y, 0x05);
     }
 
   // Handle special tiles.

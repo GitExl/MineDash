@@ -65,7 +65,7 @@ void level_load(const unsigned char level);
 void level_load_graphics();
 void level_tile_clear(const unsigned char tile_x, const unsigned char tile_y);
 void level_tile_execute_special(const unsigned char tile_x, const unsigned char tile_y);
-void level_tile_set(const unsigned char tile_x, const unsigned char tile_y, const unsigned char tile);
+void level_tile_set(const unsigned int tile_index, const unsigned char tile);
 unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned char tile_y);
 unsigned char level_tile_flags(const unsigned char tile_x, const unsigned char tile_y);
 void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags);
