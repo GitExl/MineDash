@@ -419,10 +419,7 @@ void level_update() {
     if (!level_clock) {
       if (!level_info.time_seconds) {
         if (!level_info.time_minutes) {
-          sfx_play(SFX_LVL_EXPLODE, 63, 63, 0x40);
-          entities_set_state(entities_spawn(E_ANIM, entities.tile_x[entity_player], entities.tile_y[entity_player], 0, 0), ST_LVL_EXPLODE);
-          entities.data[entity_player] |= PLAYER_DATA_DISABLED;
-          entities_set_invisible(entity_player);
+          player_kill(entity_player, PLAYER_KILL_TIMEOUT);
         } else {
           level_info.time_seconds = 59;
           --level_info.time_minutes;

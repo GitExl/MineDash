@@ -17,6 +17,9 @@
 #define PLAYER_DATA_DISABLED    0b00010000
 #define PLAYER_DATA_LOCAL_STATE 0b00001111
 
+#define PLAYER_KILL_TIMEOUT 0
+#define PLAYER_KILL_CRUSH   1
+#define PLAYER_KILL_MONSTER 2
 
 typedef struct player_info_t {
   unsigned char entity;
@@ -29,5 +32,6 @@ extern player_info_t player;
 void player_init(const unsigned char index);
 void player_update(const unsigned char index);
 void player_place_tnt(const unsigned char x, const unsigned char y);
+void player_kill(const unsigned char index, const unsigned char method);
 
 #endif

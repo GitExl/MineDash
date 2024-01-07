@@ -214,3 +214,41 @@ void player_place_tnt(const unsigned char x, const unsigned char y) {
   level_hud_update = 1;
   entities_spawn(E_TNT, x, y, 0, 0);
 }
+
+void player_kill(const unsigned char index, const unsigned char method) {
+  static unsigned char sfx;
+  static unsigned char data;
+  static unsigned char invisible;
+  static unsigned int tile_index;
+
+  data = PLAYER_DATA_DISABLED;
+
+  switch (method) {
+    case PLAYER_KILL_TIMEOUT:
+      sfx = SFX_LVL_EXPLODE;
+      invisible = 1;
+      entities_set_state(entities_spawn(E_ANIM, entities.tile_x[entity_player], entities.tile_y[entity_player], 0, 0), ST_LVL_EXPLODE);
+      break;
+
+    case PLAYER_KILL_CRUSH:
+      sfx = SFX_LVL_CRUSH;
+      entities_set_state(index, ST_LVL_PLAYER_CRUSH);
+      data |= STATE_CRUSH;
+      break;
+
+    case PLAYER_KILL_MONSTER:
+      sfx = SFX_LVL_DEATH;
+      invisible = 1;
+      level_tile_start_explosion(tile_x, tile_y);
+      break;
+  }
+
+  entities.data[index] = data;
+  if (invisible) {
+    entities_set_invisible(index);
+  }
+  sfx_play_pan(sfx, 0x40, tile_x, tile_y);
+
+  tile_index = TILE_INDEX(entities.tile_x[index], entities.tile_y[index]);
+  map.owner[tile_index] = 0xFF;
+}

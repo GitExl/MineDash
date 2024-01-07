@@ -2,7 +2,11 @@
 #include "level.h"
 #include "entities.h"
 #include "state_labels.h"
+#include "entity_types.h"
 #include "random.h"
+#include "player.h"
+#include "sfx.h"
+#include "sfx_labels.h"
 
 const unsigned char DIRECTION_STATES[] = {
   ST_LVL_GHOST_UP,
@@ -16,6 +20,7 @@ static unsigned char tile_y;
 static unsigned char data;
 static unsigned char state;
 static unsigned char flags;
+static unsigned char tile_owner;
 static signed char dir_x = 0;
 static signed char dir_y = 0;
 static unsigned int tile_index;
@@ -51,8 +56,16 @@ void ghost_update(const unsigned char index) {
   tile_y += dir_y;
 
   tile_index = TILE_INDEX(tile_x, tile_y);
-  if (map.tile[tile_index] || map.owner[tile_index] != 0xFF) {
+  tile_owner = map.owner[tile_index];
+  if (map.tile[tile_index] || tile_owner != 0xFF) {
     data = (data + 1) & 3;
+
+    if (tile_owner != 0xFF) {
+      if (entities.type[tile_owner] == E_PLAYER) {
+        player_kill(tile_owner, PLAYER_KILL_MONSTER);
+      }
+    }
+
   } else {
     entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
 
@@ -69,8 +82,4 @@ void ghost_update(const unsigned char index) {
   }
 
   entities.data[index] = data;
-}
-
-void ghost_destroy(const unsigned char index) {
-
 }

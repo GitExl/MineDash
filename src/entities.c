@@ -95,7 +95,6 @@ void entities_free(const unsigned char index) {
   switch (type) {
     case E_DIGGER: digger_destroy(index); break;
     case E_TNT: tnt_destroy(index); break;
-    case E_GHOST: ghost_destroy(index); break;
   }
 
   // Disable VERA sprite.
@@ -347,12 +346,15 @@ void entities_crush(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play_pan(SFX_LVL_CRUSH, 0x90, tile_x, tile_y);
-        entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
-        entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
+        player_kill(entity, PLAYER_KILL_CRUSH);
         break;
 
       case E_TNT:
+        level_tile_start_explosion(tile_x, tile_y);
+        entities_free(entity);
+        break;
+
+      case E_GHOST:
         level_tile_start_explosion(tile_x, tile_y);
         entities_free(entity);
         break;
