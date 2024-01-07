@@ -27,7 +27,7 @@
 unsigned char level_current = 0;
 
 // Next level to load.
-unsigned char level_next = 0;
+unsigned char level_next = 3;
 
 // Level metadata.
 level_info_t level_info;
@@ -350,7 +350,7 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
       level_hud_update = 1;
 
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_GOLD_TAKE);
-      sfx_play_pan(SFX_LVL_GOLD_TAKE, tile_x, tile_y, 0x20);
+      sfx_play_pan(SFX_LVL_GOLD_TAKE, 0x20, tile_x, tile_y);
       break;
 
     // Diamond.
@@ -365,7 +365,7 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
       level_hud_update = 1;
 
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_DIAMOND_TAKE);
-      sfx_play_pan(SFX_LVL_GOLD_TAKE, tile_x, tile_y, 0x20);
+      sfx_play_pan(SFX_LVL_GOLD_TAKE, 0x20, tile_x, tile_y);
       break;
 
     // TNT.
@@ -374,13 +374,13 @@ void level_tile_execute_special(const unsigned char tile_x, const unsigned char 
       level_hud_update = 1;
 
       entities_set_state(entities_spawn(E_ANIM, tile_x, tile_y, 0, 0), ST_LVL_TNT_TAKE);
-      sfx_play_pan(SFX_LVL_TNT_TAKE, tile_x, tile_y, 0x20);
+      sfx_play_pan(SFX_LVL_TNT_TAKE, 0x20, tile_x, tile_y);
       break;
 
     // Info.
     case T_LVL_INFO:
       game_action = GAMEACTION_SHOW_INFO;
-      sfx_play_pan(SFX_LVL_TNT_TAKE, tile_x, tile_y, 0x20);
+      sfx_play_pan(SFX_LVL_TNT_TAKE, 0x20, tile_x, tile_y);
       break;
   }
 
@@ -499,7 +499,7 @@ void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, co
     }
     if (state) {
       entities_set_state(digger, state);
-      sfx_play_pan(SFX_LVL_DIG, tile_x, tile_y, 0x05);
+      sfx_play_pan(SFX_LVL_DIG, 0x05, tile_x, tile_y);
     }
 
   // Handle special tiles.

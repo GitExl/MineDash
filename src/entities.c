@@ -17,6 +17,7 @@
 #include "exit.h"
 #include "faller.h"
 #include "tnt.h"
+#include "ghost.h"
 
 // Entities.
 entity_t entities;
@@ -94,6 +95,7 @@ void entities_free(const unsigned char index) {
   switch (type) {
     case E_DIGGER: digger_destroy(index); break;
     case E_TNT: tnt_destroy(index); break;
+    case E_GHOST: ghost_destroy(index); break;
   }
 
   // Disable VERA sprite.
@@ -287,6 +289,7 @@ void entities_update() {
       case E_PLAYER: player_update(j); break;
       case E_FALLER: faller_update(j); break;
       case E_TNT: tnt_update(j); break;
+      case E_GHOST: ghost_update(j); break;
     }
   }
 }
@@ -303,6 +306,7 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_DIGS | ETF_SPECIAL;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
   entity_types.flags[E_TNT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
+  entity_types.flags[E_GHOST] = ETF_OWNERSHIP | ETF_CRUSHABLE;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -320,6 +324,7 @@ void entities_init_entity(const char index, const char type) {
     case E_EXIT: exit_init(index); break;
     case E_FALLER: faller_init(index); break;
     case E_TNT: tnt_init(index); break;
+    case E_GHOST: ghost_init(index); break;
   }
 }
 
@@ -342,7 +347,7 @@ void entities_crush(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play_pan(SFX_LVL_CRUSH, tile_x, tile_y, 0x90);
+        sfx_play_pan(SFX_LVL_CRUSH, 0x90, tile_x, tile_y);
         entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;
@@ -369,7 +374,7 @@ void entities_explode(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play_pan(SFX_LVL_DEATH, tile_x, tile_y, 0x40);
+        sfx_play_pan(SFX_LVL_DEATH, 0x40, tile_x, tile_y);
         entities_set_state(entity, ST_LVL_PLAYER_BURN);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;

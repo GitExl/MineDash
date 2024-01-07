@@ -25,5 +25,8 @@
 #define ST_LVL_DIAMOND_TAKE 89
 #define ST_LVL_TNT_TAKE 92
 #define ST_LVL_TNT 94
+#define ST_LVL_GHOST_RIGHT 106
+#define ST_LVL_GHOST_UP 108
+#define ST_LVL_GHOST_DOWN 110
 
 #endif

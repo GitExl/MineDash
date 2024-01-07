@@ -21,6 +21,12 @@ void info_show() {
       text_write(10, 12, 0b10001010, "very quickly!");
       break;
 
+    case 3:
+      text_write(10, 10, 0b10001010, "watch how they move,");
+      text_write(10, 11, 0b10001010, "and use boulders to");
+      text_write(10, 12, 0b10001010, "kill them.");
+      break;
+
     default:
       text_write(10, 10, 0b10001010, "nope");
   }

@@ -92,5 +92,11 @@
 #define SP_LVL_SPARKS_02 86
 #define SP_LVL_SPARKS_03 87
 #define SP_LVL_SPARKS_04 88
+#define SP_LVL_GHOST_00 89
+#define SP_LVL_GHOST_01 90
+#define SP_LVL_GHOST_02 91
+#define SP_LVL_GHOST_03 92
+#define SP_LVL_GHOST_04 93
+#define SP_LVL_GHOST_05 94
 
 #endif

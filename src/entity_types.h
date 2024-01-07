@@ -9,5 +9,6 @@
 #define E_TNT 3
 #define E_DIGGER 4
 #define E_EXIT 5
+#define E_GHOST 6
 
 #endif

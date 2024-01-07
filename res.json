@@ -40,6 +40,11 @@
       "file": "lvl002.tmj",
       "tileset": "LVL",
       "title": "Demolition"
+    },
+    "LVL003": {
+      "file": "lvl003.tmj",
+      "tileset": "LVL",
+      "title": "Ghost Town"
     }
   },
 
@@ -49,7 +54,8 @@
     "Anim": 2,
     "TNT": 3,
     "Digger": 4,
-    "Exit": 5
+    "Exit": 5,
+    "Ghost": 6
   },
 
   "sprite_groups": {
@@ -266,6 +272,18 @@
       "x": 0,
       "y": 176,
       "count": 5,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "GHOST": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 192,
+      "count": 6,
       "palette": "MAIN",
       "groups": ["LVL"]
     }
