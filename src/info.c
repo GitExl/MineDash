@@ -22,9 +22,9 @@ void info_show() {
       break;
 
     case 3:
-      text_write(10, 10, 0b10001010, "watch how they move,");
+      text_write(10, 10, 0b10001010, "watch how they move");
       text_write(10, 11, 0b10001010, "and use boulders to");
-      text_write(10, 12, 0b10001010, "kill them.");
+      text_write(10, 12, 0b10001010, "kill them if needed.");
       break;
 
     default:
