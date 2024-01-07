@@ -13,5 +13,6 @@
 #define SFX_LVL_DEATH 7
 #define SFX_LVL_TNT_TICK 8
 #define SFX_LVL_TNT_TAKE 9
+#define SFX_LVL_GHOST 10
 
 #endif

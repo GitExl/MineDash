@@ -19,7 +19,7 @@
     "frequency_sweep_step": -5,
     "pulse_width": 20,
     "pulse_width_sweep_time": 4,
-    "volume": 1.0
+    "volume": 0.75
   },
   "GOLD_HIT": {
     "waveform_type": 1,
@@ -30,7 +30,7 @@
     "frequency_sweep_step": 0,
     "pulse_width": 8,
     "pulse_width_sweep_time": 0,
-    "volume": 0.5
+    "volume": 0.75
   },
   "TIME_OUT": {
     "waveform_type": 2,
@@ -41,7 +41,7 @@
     "frequency_sweep_step": 0,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.5
+    "volume": 0.75
   },
   "ROCK_HIT": {
     "waveform_type": 3,
@@ -52,7 +52,7 @@
     "frequency_sweep_step": -12,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 1
+    "volume": 0.75
   },
   "GOLD_TAKE": {
     "waveform_type": 0,
@@ -63,7 +63,7 @@
     "frequency_sweep_step": 0,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.6
+    "volume": 0.65
   },
   "DIG": {
     "waveform_type": 3,
@@ -74,7 +74,7 @@
     "frequency_sweep_step": -46,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.3
+    "volume": 0.33
   },
   "DEATH": {
     "waveform_type": 0,
@@ -96,7 +96,7 @@
     "frequency_sweep_step": -39,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.2
+    "volume": 0.25
   },
   "TNT_TAKE": {
     "waveform_type": 2,
@@ -105,6 +105,17 @@
     "volume_decay_len": 15,
     "frequency": 320,
     "frequency_sweep_step": 7,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.85
+  },
+  "GHOST": {
+    "waveform_type": 2,
+    "volume_attack_len": 16,
+    "volume_sustain_len": 0,
+    "volume_decay_len": 16,
+    "frequency": 720,
+    "frequency_sweep_step": -10,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
     "volume": 0.75

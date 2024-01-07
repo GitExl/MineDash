@@ -17,7 +17,7 @@ const unsigned char DIRECTION_STATES[] = {
 
 static unsigned char tile_x;
 static unsigned char tile_y;
-static unsigned char data;
+static unsigned char dir;
 static unsigned char state;
 static unsigned char flags;
 static unsigned char tile_owner;
@@ -41,14 +41,14 @@ void ghost_update(const unsigned char index) {
   dir_x = 0;
   dir_y = 0;
 
-  data = entities.data[index];
-  if (data == GHOST_DIR_UP) {
+  dir = entities.data[index];
+  if (dir == GHOST_DIR_UP) {
     dir_y = -1;
-  } else if (data == GHOST_DIR_RIGHT) {
+  } else if (dir == GHOST_DIR_RIGHT) {
     dir_x = 1;
-  } else if (data == GHOST_DIR_DOWN) {
+  } else if (dir == GHOST_DIR_DOWN) {
     dir_y = 1;
-  } else if (data == GHOST_DIR_LEFT) {
+  } else if (dir == GHOST_DIR_LEFT) {
     dir_x = -1;
   }
 
@@ -58,7 +58,7 @@ void ghost_update(const unsigned char index) {
   tile_index = TILE_INDEX(tile_x, tile_y);
   tile_owner = map.owner[tile_index];
   if (map.tile[tile_index] || tile_owner != 0xFF) {
-    data = (data + 1) & 3;
+    dir = (dir + 1) & 3;
 
     if (tile_owner != 0xFF) {
       if (entities.type[tile_owner] == E_PLAYER) {
@@ -66,20 +66,22 @@ void ghost_update(const unsigned char index) {
       }
     }
 
-  } else {
-    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
-
-    // Set state for this direction.
-    if (data == GHOST_DIR_LEFT) {
+    if (dir == GHOST_DIR_LEFT) {
       flags = ENTITYF_FLIPX;
     } else {
       flags = 0;
     }
     entities.flags[index] = flags;
 
-    state = DIRECTION_STATES[data];
+    state = DIRECTION_STATES[dir];
     entities_set_state(index, state);
+
+  } else {
+    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
+    if (!RANDOM) {
+      sfx_play_pan(SFX_LVL_GHOST, 0x10, tile_x, tile_y);
+    }
   }
 
-  entities.data[index] = data;
+  entities.data[index] = dir;
 }
