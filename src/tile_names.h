@@ -39,5 +39,6 @@
 #define T_LVL_DIRT_CAPBOTTOM 40
 #define T_LVL_DIRT_CAPLEFT 41
 #define T_LVL_DIRT_CAPRIGHT 42
+#define T_LVL_INFO 44
 
 #endif

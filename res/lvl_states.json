@@ -43,8 +43,8 @@
     ["PL_BURN_03", 5, 1, ""],
     ["PL_BURN_04", 5, 1, ""],
     ["PL_BURN_05", 5, 1, ""],
-    ["PL_BURN_06", 40, 1, "REPEAT_RANDOM"],
-    ["PL_BURN_06", 40, 1, "REPEAT_RANDOM"],
+    ["PL_BURN_06", 50, 1, "REPEAT_RANDOM"],
+    ["PL_BURN_06", 50, 1, "REPEAT_RANDOM"],
     ["PL_BURN_07", 5, -1, ""]
   ],
 

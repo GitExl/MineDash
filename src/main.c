@@ -12,13 +12,13 @@
 #include "main.h"
 #include "level_names.h"
 #include "sfx.h"
+#include "info.h"
 
 unsigned char game_state = GAMESTATE_LEVEL;
 unsigned char game_action = GAMEACTION_LOAD_LEVEL;
 
 void main() {
   clock_t start;
-
 
   text_clear();
   text_load();
@@ -47,7 +47,6 @@ void main() {
   entities_load_states("lvl.sta");
   level_load_graphics();
 
-
   while(1) {
     if (game_action != GAMEACTION_NONE) {
       switch (game_action) {
@@ -70,23 +69,45 @@ void main() {
           VERA.display.video |= 0b01010000;
 
           break;
+
+        case GAMEACTION_SHOW_INFO:
+          game_state = GAMESTATE_INFO;
+          text_blind();
+          text_box(8, 8, 24, 10, 0b10001001);
+          info_show();
+          break;
+
+        case GAMEACTION_HIDE_INFO:
+          game_state = GAMESTATE_LEVEL;
+          text_blind_clear();
+          break;
       }
 
       game_action = GAMEACTION_NONE;
     }
 
     input_read();
-    entities_update();
-    level_update();
+
+    if (game_state == GAMESTATE_LEVEL) {
+      entities_update();
+      level_update();
+
+      // Center camera on player.
+      camerax = (entities.tile_x[entity_player] << 4) + entities.p_x[entity_player] - CAMERA_WIDTH_HALF;
+      cameray = (entities.tile_y[entity_player] << 4) + entities.p_y[entity_player] - CAMERA_HEIGHT_HALF;
+      camera_update();
+
+      // Update VERA sprite positions.
+      entities_update_vera_sam();
+
+    } else if (game_state == GAMESTATE_INFO) {
+      if (input1_change && input1 & JOY_START_MASK) {
+        game_action = GAMEACTION_HIDE_INFO;
+      }
+
+    }
+
     sfx_update();
-
-    // Center camera on player.
-    camerax = (entities.tile_x[entity_player] << 4) + entities.p_x[entity_player] - CAMERA_WIDTH_HALF;
-    cameray = (entities.tile_y[entity_player] << 4) + entities.p_y[entity_player] - CAMERA_HEIGHT_HALF;
-    camera_update();
-
-    // Update VERA sprite positions.
-    entities_update_vera_sam();
 
     // Wait for vsync.
     start = clock();

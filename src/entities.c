@@ -40,6 +40,8 @@ static unsigned char type;
 static unsigned char state;
 static unsigned char counter;
 static unsigned int address;
+static unsigned char tile_x;
+static unsigned char tile_y;
 
 static unsigned char ret_property_mask;
 
@@ -183,8 +185,6 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
 
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags) {
   static unsigned char type;
-  static unsigned char tile_x;
-  static unsigned char tile_y;
   static unsigned int tile_index;
 
   static unsigned char dest_tile_x;
@@ -335,21 +335,25 @@ void entities_crush(const unsigned char entity) {
   static unsigned char type;
   static unsigned int tile_index;
 
+  tile_x = entities.tile_x[entity];
+  tile_y = entities.tile_y[entity];
+
   type = entities.type[entity];
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play(SFX_LVL_CRUSH, 63, 63, 0x40);
+        sfx_play_pan(SFX_LVL_CRUSH, tile_x, tile_y, 0x40);
         entities_set_state(entity, ST_LVL_PLAYER_CRUSH);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;
 
       case E_TNT:
-        level_tile_start_explosion(entities.tile_x[entity], entities.tile_y[entity]);
+        level_tile_start_explosion(tile_x, tile_y);
+        entities_free(entity);
         break;
     }
 
-    tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
+    tile_index = TILE_INDEX(tile_x, tile_y);
     map.owner[tile_index] = 0xFF;
   }
 }
@@ -358,21 +362,24 @@ void entities_explode(const unsigned char entity) {
   static unsigned char type;
   static unsigned int tile_index;
 
+  tile_x = entities.tile_x[entity];
+  tile_y = entities.tile_y[entity];
+
   type = entities.type[entity];
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play(SFX_LVL_DEATH, 63, 63, 0x40);
+        sfx_play_pan(SFX_LVL_DEATH, tile_x, tile_y, 0x40);
         entities_set_state(entity, ST_LVL_PLAYER_BURN);
         entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
         break;
 
       case E_TNT:
-        level_tile_start_explosion(entities.tile_x[entity], entities.tile_y[entity]);
+        level_tile_start_explosion(tile_x, tile_y);
         break;
     }
 
-    tile_index = TILE_INDEX(entities.tile_x[entity], entities.tile_y[entity]);
+    tile_index = TILE_INDEX(tile_x, tile_y);
     map.owner[tile_index] = 0xFF;
   }
 }

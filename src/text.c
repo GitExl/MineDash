@@ -22,6 +22,58 @@ void text_load() {
   cbm_k_load(3, 0);
 }
 
+void text_blind() {
+  i = 208;
+
+  VERA.address = 0xB000;
+  VERA.address_hi = 0x01 | VERA_INC_1;
+  do {
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+    VERA.data0 = 0x89;
+    VERA.data0 = 0b11010000;
+  } while (--i);
+}
+
+void text_blind_clear() {
+  i = 208;
+
+  VERA.address = 0xB000;
+  VERA.address_hi = 0x01 | VERA_INC_1;
+  do {
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+    VERA.data0 = 0;
+  } while (--i);
+}
+
 void text_clear() {
   i = 240;
 
@@ -101,37 +153,37 @@ void text_box(const unsigned char x, const unsigned char y, unsigned char width,
   VERA.address_hi = 0x01 | VERA_INC_1;
 
   // Top.
-  VERA.data0 = 0x70;
+  VERA.data0 = 0x80;
   VERA.data0 = colors;
   for (i = 0; i < width; i++) {
-    VERA.data0 = 0x71;
+    VERA.data0 = 0x81;
     VERA.data0 = colors;
   }
-  VERA.data0 = 0x72;
+  VERA.data0 = 0x82;
   VERA.data0 = colors;
 
   // Sides.
   for (i = 0; i < height; i++) {
     VERA.address += step;
 
-    VERA.data0 = 0x76;
+    VERA.data0 = 0x86;
     VERA.data0 = colors;
     for (j = 0; j < width; j++) {
       VERA.data0 = 0x00;
       VERA.data0 = colors;
     }
-    VERA.data0 = 0x77;
+    VERA.data0 = 0x87;
     VERA.data0 = colors;
   }
 
   // Bottom.
   VERA.address += step;
-  VERA.data0 = 0x73;
+  VERA.data0 = 0x83;
   VERA.data0 = colors;
   for (i = 0; i < width; i++) {
-    VERA.data0 = 0x74;
+    VERA.data0 = 0x84;
     VERA.data0 = colors;
   }
-  VERA.data0 = 0x75;
+  VERA.data0 = 0x85;
   VERA.data0 = colors;
 }

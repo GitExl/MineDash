@@ -1401,7 +1401,7 @@
                 {
                  "name":"Special",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }],
          "type":"Exit_Open"
         }, 
@@ -1799,8 +1799,9 @@
                 {
                  "name":"Special",
                  "type":"bool",
-                 "value":false
-                }]
+                 "value":true
+                }],
+         "type":"Info"
         }, 
         {
          "id":45,
