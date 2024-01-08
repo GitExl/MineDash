@@ -13,6 +13,7 @@
 #include "level_names.h"
 #include "sfx.h"
 #include "info.h"
+#include "pause.h"
 
 unsigned char game_state = GAMESTATE_LEVEL;
 unsigned char game_action = GAMEACTION_LOAD_LEVEL;
@@ -48,6 +49,8 @@ void main() {
   level_load_graphics();
 
   while(1) {
+    input_read();
+
     if (game_action != GAMEACTION_NONE) {
       switch (game_action) {
 
@@ -81,14 +84,27 @@ void main() {
           game_state = GAMESTATE_LEVEL;
           text_blind_clear();
           break;
+
+        case GAMEACTION_PAUSE:
+          game_state = GAMESTATE_PAUSE;
+          pause_init();
+          break;
+
+        case GAMEACTION_UNPAUSE:
+          game_state = GAMESTATE_LEVEL;
+          text_blind_clear();
+          break;
       }
 
       game_action = GAMEACTION_NONE;
     }
 
-    input_read();
-
+    // Level.
     if (game_state == GAMESTATE_LEVEL) {
+      if (input1_change && input1 & JOY_START_MASK) {
+        game_action = GAMEACTION_PAUSE;
+      }
+
       entities_update();
       level_update();
 
@@ -100,10 +116,15 @@ void main() {
       // Update VERA sprite positions.
       entities_update_vera_sam();
 
+    // Info text.
     } else if (game_state == GAMESTATE_INFO) {
       if (input1_change && input1 & JOY_START_MASK) {
         game_action = GAMEACTION_HIDE_INFO;
       }
+
+    // Pause menu.
+    } else if (game_state == GAMESTATE_PAUSE) {
+      pause_update();
 
     }
 
