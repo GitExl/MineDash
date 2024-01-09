@@ -119,5 +119,16 @@
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
     "volume": 0.75
+  },
+  "BIP": {
+    "waveform_type": 0,
+    "volume_attack_len": 0,
+    "volume_sustain_len": 3,
+    "volume_decay_len": 8,
+    "frequency": 420,
+    "frequency_sweep_step": 4,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": -64,
+    "volume": 0.5
   }
 }

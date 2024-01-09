@@ -37,3 +37,7 @@ void exit_open() {
     entities_set_state(exit_index, ST_LVL_SPARK);
   }
 }
+
+void exit_reset() {
+  exit_count = 0;
+}

@@ -27,7 +27,7 @@
 unsigned char level_current = 0;
 
 // Next level to load.
-unsigned char level_next = 3;
+unsigned char level_next = 0;
 
 // Level metadata.
 level_info_t level_info;
@@ -130,6 +130,9 @@ void level_load(const unsigned char level) {
       player.entity = i;
     }
   }
+
+  player.tnt = 0;
+  exit_reset();
 }
 
 void level_load_graphics() {

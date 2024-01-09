@@ -5,5 +5,6 @@
 
 void exit_init(const unsigned char index);
 void exit_open();
+void exit_reset();
 
 #endif

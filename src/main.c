@@ -71,6 +71,8 @@ void main() {
 
           VERA.display.video |= 0b01010000;
 
+          game_state = GAMESTATE_LEVEL;
+
           break;
 
         case GAMEACTION_SHOW_INFO:
@@ -80,19 +82,9 @@ void main() {
           info_show();
           break;
 
-        case GAMEACTION_HIDE_INFO:
-          game_state = GAMESTATE_LEVEL;
-          text_blind_clear();
-          break;
-
         case GAMEACTION_PAUSE:
           game_state = GAMESTATE_PAUSE;
           pause_init();
-          break;
-
-        case GAMEACTION_UNPAUSE:
-          game_state = GAMESTATE_LEVEL;
-          text_blind_clear();
           break;
       }
 
@@ -119,7 +111,8 @@ void main() {
     // Info text.
     } else if (game_state == GAMESTATE_INFO) {
       if (input1_change && input1 & JOY_START_MASK) {
-        game_action = GAMEACTION_HIDE_INFO;
+        text_blind_clear();
+        game_state = GAMESTATE_LEVEL;
       }
 
     // Pause menu.

@@ -4,6 +4,8 @@
 #include "text.h"
 #include "input.h"
 #include "main.h"
+#include "sfx.h"
+#include "sfx_labels.h"
 
 #define CF_EXIT 0x01
 #define CF_HOLD 0x02
@@ -44,6 +46,7 @@ void pause_update() {
         pause_choice = 0;
       } else {
         ++pause_choice;
+        sfx_play(SFX_LVL_BIP, 63, 63, 0xFF);
       }
 
     } else if (input1 & JOY_UP_MASK) {
@@ -51,6 +54,7 @@ void pause_update() {
         pause_choice = CHOICE_MAX;
       } else {
         --pause_choice;
+        sfx_play(SFX_LVL_BIP, 63, 63, 0xFF);
       }
 
     }
@@ -61,6 +65,7 @@ void pause_update() {
   if (input2_change) {
     if (!(choice_flags[pause_choice] & CF_HOLD) && input2 & JOY_BTN_A_MASK) {
       pause_trigger();
+      return;
     }
   }
 
@@ -69,6 +74,7 @@ void pause_update() {
       ++pause_hold;
       if (pause_hold == 48) {
         pause_trigger();
+        return;
       }
     } else if (pause_hold) {
       pause_hold = 0;
@@ -101,11 +107,13 @@ void pause_redraw() {
 }
 
 void pause_trigger() {
+  text_clear();
+
   if (pause_choice == 0) {
-    game_action = GAMEACTION_UNPAUSE;
+    game_state = GAMESTATE_LEVEL;
   } else if (pause_choice == 1) {
     game_action = GAMEACTION_LOAD_LEVEL;
   } else if (pause_choice == 2) {
-
+    game_state = GAMESTATE_LEVEL;
   }
 }
