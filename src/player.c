@@ -221,6 +221,10 @@ void player_kill(const unsigned char index, const unsigned char method) {
   static unsigned char invisible;
   static unsigned int tile_index;
 
+  if (entities.data[index] & PLAYER_DATA_DISABLED) {
+    return;
+  }
+
   data = PLAYER_DATA_DISABLED;
 
   switch (method) {

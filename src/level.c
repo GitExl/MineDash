@@ -107,6 +107,9 @@ void level_load(const unsigned char level) {
     }
   }
 
+  player.tnt = 0;
+  exit_reset();
+
   filename[7] = 'e';
   filename[8] = 'n';
   filename[9] = 't';
@@ -130,9 +133,6 @@ void level_load(const unsigned char level) {
       player.entity = i;
     }
   }
-
-  player.tnt = 0;
-  exit_reset();
 }
 
 void level_load_graphics() {

@@ -138,7 +138,7 @@
         {
          "name":"Points",
          "type":"int",
-         "value":1400
+         "value":1350
         }, 
         {
          "name":"Time",

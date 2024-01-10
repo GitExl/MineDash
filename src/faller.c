@@ -74,7 +74,7 @@ void faller_update(const unsigned char index) {
     if (local_state == FALLER_STATE_IDLE && !x && !y) {
       tile_index = TILE_INDEX(tile_x, tile_y);
       state = level_tile_evaluate_gravity(tile_index, GF_ABOVE | GF_LEFT | GF_RIGHT | GF_CRUSH);
-      sfx_index = local_type == FALLER_TYPE_ROCK ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT;
+      sfx_index = (local_type == FALLER_TYPE_ROCK) ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT;
       if (state) {
         local_state = state;
         faller_set_state(index, local_state, local_type);
@@ -115,6 +115,7 @@ void faller_update(const unsigned char index) {
         local_state = FALLER_STATE_IDLE;
 
       } else {
+        tile_index = TILE_INDEX(tile_x, tile_y);
         level_tile_set(tile_index, tiles[local_type]);
         entities_free(index);
         return;

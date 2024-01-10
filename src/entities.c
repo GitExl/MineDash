@@ -41,8 +41,6 @@ static unsigned char type;
 static unsigned char state;
 static unsigned char counter;
 static unsigned int address;
-static unsigned char tile_x;
-static unsigned char tile_y;
 
 static unsigned char ret_property_mask;
 
@@ -186,31 +184,29 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
 
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags) {
   static unsigned char type;
-  static unsigned int tile_index;
+  static unsigned char type_flags;
 
+  static unsigned char tile_x;
+  static unsigned char tile_y;
   static unsigned char dest_tile_x;
   static unsigned char dest_tile_y;
-  static unsigned int dest_tile_index;
 
-  static unsigned char type_flags;
+  static unsigned int tile_index;
+  static unsigned int dest_tile_index;
 
   type = entities.type[entity];
   type_flags = entity_types.flags[type];
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
 
+  tile_index = TILE_INDEX(tile_x, tile_y);
+
   dest_tile_x = tile_x + move_x;
   dest_tile_y = tile_y + move_y;
 
   // Move tile ownership.
   if (type_flags & ETF_OWNERSHIP) {
-    tile_index = TILE_INDEX(tile_x, tile_y);
-
-    // Only clear actual ownership. Helps with TNT placement.
-    if (map.owner[tile_index] == entity) {
-      map.owner[tile_index] = 0xFF;
-    }
-
+    map.owner[tile_index] = 0xFF;
     dest_tile_index = TILE_INDEX(dest_tile_x, dest_tile_y);
     map.owner[dest_tile_index] = entity;
   }
@@ -224,7 +220,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   entities.tile_y[entity] = dest_tile_y;
 
   if (move_flags & TILE_MOVE_NO_EVALUATE) {
-    level_tile_set(TILE_INDEX(tile_x, tile_y), 0);
+    level_tile_set(tile_index, 0);
   } else {
     level_tile_clear(tile_x, tile_y);
   }
@@ -338,6 +334,8 @@ void entities_load_states(const char* states_filename) {
 void entities_crush(const unsigned char entity) {
   static unsigned char type;
   static unsigned int tile_index;
+  static unsigned char tile_x;
+  static unsigned char tile_y;
 
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
@@ -368,6 +366,8 @@ void entities_crush(const unsigned char entity) {
 void entities_explode(const unsigned char entity) {
   static unsigned char type;
   static unsigned int tile_index;
+  static unsigned char tile_x;
+  static unsigned char tile_y;
 
   tile_x = entities.tile_x[entity];
   tile_y = entities.tile_y[entity];
