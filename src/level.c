@@ -277,14 +277,6 @@ unsigned char level_tile_flags(const unsigned char tile_x, const unsigned char t
   return tileset.flags[tile];
 }
 
-unsigned char level_tile_is_blocked(const unsigned char tile_x, const unsigned char tile_y) {
-  tile_index = TILE_INDEX(tile_x, tile_y);
-
-  tile = map.tile[tile_index];
-  tile_flags = tileset.flags[tile];
-  return (tile_flags & TILEF_BLOCKS) || (map.owner[tile_index] != 0xFF);
-}
-
 void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char tile_y, const unsigned char gravity_flags) {
   static unsigned char entity;
   static unsigned char type;

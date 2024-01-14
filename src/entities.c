@@ -390,9 +390,7 @@ void entities_explode(const unsigned char entity) {
   if (entity_types.flags[type] & ETF_CRUSHABLE) {
     switch (type) {
       case E_PLAYER:
-        sfx_play_pan(SFX_LVL_DEATH, 0x40, tile_x, tile_y);
-        entities_set_state(entity, ST_LVL_PLAYER_BURN);
-        entities.data[entity] = STATE_CRUSH | PLAYER_DATA_DISABLED;
+        player_kill(entity, PLAYER_KILL_BURN);
         break;
 
       case E_TNT:

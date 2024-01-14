@@ -37,6 +37,15 @@ void player_update(const unsigned char index) {
   static unsigned char map_tile;
   static unsigned char entity_flags;
 
+  static signed char move_x = 0;
+  static signed char move_y = 0;
+  static unsigned char move_tile_x = 0;
+  static unsigned char move_tile_y = 0;
+  static unsigned char move_state = 0;
+  static unsigned char move_state_push = 0;
+  static unsigned char tile = 0;
+  static unsigned int move_tile_index = 0;
+
   x = entities.p_x[index];
   y = entities.p_y[index];
   tile_x = entities.tile_x[index];
@@ -133,31 +142,43 @@ void player_update(const unsigned char index) {
 
     // Move or push when D-pad is down.
     } else {
+      move_x = 0;
+      move_y = 0;
+      move_state = 0;
+      move_state_push = 0;
+
       if (input1 & JOY_UP_MASK) {
-        if (!level_tile_is_blocked(tile_x, tile_y - 1)) {
-          local_state = STATE_UP;
-          entities_tile_move(index, 0, -1, 0);
-        }
+        move_y = -1;
+        move_state = STATE_UP;
       } else if (input1 & JOY_DOWN_MASK) {
-        if (!level_tile_is_blocked(tile_x, tile_y + 1)) {
-          local_state = STATE_DOWN;
-          entities_tile_move(index, 0, 1, 0);
-        }
+        move_y = 1;
+        move_state = STATE_DOWN;
       } else if (input1 & JOY_LEFT_MASK) {
-        tile_flags = level_tile_flags(tile_x - 1, tile_y);
-        if (!level_tile_is_blocked(tile_x - 1, tile_y)) {
-          local_state = STATE_LEFT;
-          entities_tile_move(index, -1, 0, 0);
-        } else if (tile_flags & TILEF_PUSHABLE) {
-          local_state = STATE_PUSH_LEFT_START;
-        }
+        move_x = -1;
+        move_state = STATE_LEFT;
+        move_state_push = STATE_PUSH_LEFT_START;
       } else if (input1 & JOY_RIGHT_MASK) {
-        tile_flags = level_tile_flags(tile_x + 1, tile_y);
-        if (!level_tile_is_blocked(tile_x + 1, tile_y)) {
-          local_state = STATE_RIGHT;
-          entities_tile_move(index, 1, 0, 0);
-        } else if (tile_flags & TILEF_PUSHABLE) {
-          local_state = STATE_PUSH_RIGHT_START;
+        move_x = 1;
+        move_state = STATE_RIGHT;
+        move_state_push = STATE_PUSH_RIGHT_START;
+      }
+
+      if (move_state) {
+        move_tile_x = tile_x + move_x;
+        move_tile_y = tile_y + move_y;
+
+        move_tile_index = TILE_INDEX(move_tile_x, move_tile_y);
+        tile = map.tile[move_tile_index];
+        tile_flags = tileset.flags[tile];
+        if (tile_flags & TILEF_LETHAL) {
+          player_kill(index, PLAYER_KILL_BURN);
+          return;
+        }
+        if (!((tile_flags & TILEF_BLOCKS) || (map.owner[move_tile_index] != 0xFF))) {
+          local_state = move_state;
+          entities_tile_move(index, move_x, move_y, 0);
+        } else if (move_state_push && tile_flags & TILEF_PUSHABLE) {
+          local_state = move_state_push;
         }
       }
 
@@ -251,6 +272,7 @@ void player_kill(const unsigned char index, const unsigned char method) {
     case PLAYER_KILL_BURN:
       sfx = SFX_LVL_DEATH;
       entities_set_state(index, ST_LVL_PLAYER_BURN);
+      data |= STATE_CRUSH;
       break;
   }
 
