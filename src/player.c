@@ -174,7 +174,7 @@ void player_update(const unsigned char index) {
           player_kill(index, PLAYER_KILL_BURN);
           return;
         }
-        if (!((tile_flags & TILEF_BLOCKS) || (map.owner[move_tile_index] != 0xFF))) {
+        if (!((tile_flags & TILEF_BLOCKS) || map.owner[move_tile_index] != 0xFF)) {
           local_state = move_state;
           entities_tile_move(index, move_x, move_y, 0);
         } else if (move_state_push && tile_flags & TILEF_PUSHABLE) {

@@ -199,6 +199,7 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags) {
   static unsigned char type;
   static unsigned char type_flags;
+  static unsigned char entity_flags;
 
   static unsigned char tile_x;
   static unsigned char tile_y;
@@ -233,10 +234,13 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
   entities.tile_x[entity] = dest_tile_x;
   entities.tile_y[entity] = dest_tile_y;
 
-  if (move_flags & TILE_MOVE_NO_EVALUATE) {
-    level_tile_set(tile_index, 0);
-  } else {
-    level_tile_clear(tile_x, tile_y);
+  entity_flags = entities.flags[entity];
+  if (!(entity_flags & ENTITYF_BEHIND_MAP)) {
+    if (move_flags & TILE_MOVE_NO_EVALUATE) {
+      level_tile_set(tile_index, 0);
+    } else {
+      level_tile_clear(tile_x, tile_y);
+    }
   }
 }
 

@@ -3,6 +3,7 @@
 
 #include "sfx.h"
 #include "sfx_pan.h"
+#include "random.h"
 
 sfx_t sfx;
 
@@ -123,6 +124,9 @@ void sfx_play_pan(const unsigned char sfx_index, const unsigned char priority, c
 }
 
 void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const unsigned char vol_right, const unsigned char priority) {
+  signed int shift;
+  unsigned int frequency;
+
   unsigned char use = 0xFF;
 
   // Use the first unused channel or take over a channel playing a lower priority sound.
@@ -138,6 +142,9 @@ void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const
     return;
   }
 
+  shift = (RANDOM << 1) - 256;
+  frequency = sfx.frequency[sfx_index] + shift;
+
   sfx_channels.sfx[use] = sfx_index;
   sfx_channels.priority[use] = priority;
   sfx_channels.asd_stage[use] = ASD_STAGE_ATTACK;
@@ -145,7 +152,7 @@ void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const
   sfx_channels.gain[use] = 0;
   sfx_channels.volume_left[use] = vol_left & 0x3F;
   sfx_channels.volume_right[use] = vol_right & 0x3F;
-  sfx_channels.frequency[use] = sfx.frequency[sfx_index];
+  sfx_channels.frequency[use] = frequency;
   sfx_channels.pulse_width[use] = sfx.pulse_width[sfx_index] & 0x3F;
 
   sfx_vera_channel_update(use);

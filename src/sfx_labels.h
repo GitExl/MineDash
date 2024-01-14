@@ -15,5 +15,6 @@
 #define SFX_LVL_TNT_TAKE 9
 #define SFX_LVL_GHOST 10
 #define SFX_LVL_BIP 11
+#define SFX_LVL_SINK 12
 
 #endif

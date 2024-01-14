@@ -317,7 +317,9 @@ unsigned char level_tile_evaluate_gravity(unsigned int tile_index, const unsigne
   // Fall down.
   if (gravity_flags & GF_ABOVE) {
     tile_index += MAP_WIDTH;
-    if (!map.tile[tile_index]) {
+    tile = map.tile[tile_index];
+    tile_flags = tileset.flags[tile];
+    if (!(tile_flags & TILEF_BLOCKS)) {
 
       // Check for crushing.
       if (gravity_flags & GF_CRUSH && map.owner[tile_index] != 0xFF) {

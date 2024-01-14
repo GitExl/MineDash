@@ -359,9 +359,9 @@ def write_pan_curves(src: Path):
         vl = 1.0 - abs(ax)
         vr = 1.0 - abs(ax)
         if ax > 0:
-            vr = vr * vr
+            vr = vr * vr * vr
         elif ax < 0:
-            vl = vl * vl
+            vl = vl * vl * vl
 
         pan_l.append(floor(vl * 63))
         pan_r.append(floor(vr * 63))

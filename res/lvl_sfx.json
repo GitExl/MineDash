@@ -30,7 +30,7 @@
     "frequency_sweep_step": 0,
     "pulse_width": 8,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.66
   },
   "TIME_OUT": {
     "waveform_type": 2,
@@ -52,7 +52,7 @@
     "frequency_sweep_step": -12,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.66
   },
   "GOLD_TAKE": {
     "waveform_type": 0,
@@ -63,7 +63,7 @@
     "frequency_sweep_step": 0,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.65
+    "volume": 0.75
   },
   "DIG": {
     "waveform_type": 3,
@@ -96,7 +96,7 @@
     "frequency_sweep_step": -39,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.25
+    "volume": 0.33
   },
   "TNT_TAKE": {
     "waveform_type": 2,
@@ -118,7 +118,7 @@
     "frequency_sweep_step": -10,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.666
   },
   "BIP": {
     "waveform_type": 0,
@@ -129,6 +129,17 @@
     "frequency_sweep_step": 4,
     "pulse_width": 63,
     "pulse_width_sweep_time": -64,
+    "volume": 0.6
+  },
+  "SINK": {
+    "waveform_type": 0,
+    "volume_attack_len": 1,
+    "volume_sustain_len": 10,
+    "volume_decay_len": 1,
+    "frequency": 70,
+    "frequency_sweep_step": 48,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
     "volume": 0.5
   }
 }
