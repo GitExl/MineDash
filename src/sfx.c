@@ -88,6 +88,7 @@ void sfx_update() {
     }
 
     // Frequency sweep.
+    // TODO: clamp because of pitch shift, or warn if pitch shift could cause wrapping.
     if (sfx.frequency_sweep_direction[sfx_index]) {
       frequency += sfx.frequency_sweep_step[sfx_index];
     } else {

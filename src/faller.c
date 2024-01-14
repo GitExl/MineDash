@@ -126,17 +126,19 @@ void faller_update(const unsigned char index) {
         dir_y = 1;
       }
 
-      // Move to target position if the tile is still empty.
       tile_index = TILE_INDEX(tile_x + dir_x, tile_y + dir_y);
       tile = map.tile[tile_index];
       tile_flags = tileset.flags[tile];
-      if ((tile_flags & TILEF_BLOCKS) || map.owner[tile_index] != 0xFF) {
+
+      // Stop if the new tile is not empty.
+      if (!(tile_flags & TILEF_LETHAL) && (tile || map.owner[tile_index] != 0xFF)) {
         tile_index = TILE_INDEX(tile_x, tile_y);
         level_tile_set(tile_index, tiles[local_type]);
         entities_free(index);
         return;
       }
 
+      // Move to target position.
       entities_tile_move(index, dir_x, dir_y, move_flags);
       faller_set_state(index, local_state, local_type);
       local_state = FALLER_STATE_IDLE;

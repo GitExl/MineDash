@@ -107,7 +107,7 @@ void pause_redraw() {
 }
 
 void pause_trigger() {
-  text_clear();
+  text_blind_clear();
 
   if (pause_choice == 0) {
     game_state = GAMESTATE_LEVEL;
