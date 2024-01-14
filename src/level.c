@@ -15,6 +15,7 @@
 #include "main.h"
 #include "sfx.h"
 #include "sfx_labels.h"
+#include "random.h"
 
 #include "exit.h"
 #include "player.h"
@@ -27,7 +28,7 @@
 unsigned char level_current = 0;
 
 // Next level to load.
-unsigned char level_next = 0;
+unsigned char level_next = 2;
 
 // Level metadata.
 level_info_t level_info;
@@ -44,6 +45,9 @@ unsigned char level_clock;
 // Set if the HUD needs to be updated this frame.
 unsigned char level_hud_update;
 
+// Index of next tile to check for animation.
+static unsigned int animate_index;
+
 // Module shared variables.
 static unsigned int tile_index;
 static unsigned char tile_flags;
@@ -52,6 +56,28 @@ static unsigned char title_len;
 static unsigned char flags;
 static unsigned char pattern;
 
+void level_animate_tiles() {
+  unsigned char i;
+  static unsigned char change = 0;
+
+  for (i = 0; i < 128; i++) {
+    change = 0;
+    animate_index = (animate_index + 1) & 4095;
+    tile = map.tile[animate_index];
+    switch (tile) {
+      case T_LVL_LAVA1: change = T_LVL_LAVA2; break;
+      case T_LVL_LAVA2: change = T_LVL_LAVA1; break;
+    }
+    if (change) {
+      map.tile[animate_index] = change;
+      VERA.address = 0x8000 + (animate_index << 1);
+      VERA.address_hi = VERA_INC_1;
+      VERA.data0 = tile;
+      VERA.data0 = tileset.palette[change] << 4;
+    }
+  }
+}
+
 void level_load(const unsigned char level) {
   register unsigned char i, j;
   static unsigned char type_flags;
@@ -59,7 +85,7 @@ void level_load(const unsigned char level) {
   char filename[] = "lvl000.map";
 
   level_current = level;
-  level_clock = LEVEL_SECOND;
+  level_clock = 0;
   level_hud_update = 1;
 
   // Base filename for map index.
@@ -274,8 +300,10 @@ void level_tile_evaluate_faller(const unsigned char tile_x, const unsigned char 
 
   state = level_tile_evaluate_gravity(tile_index, gravity_flags);
   if (state) {
+
+    // Spawn faller, with a 3 frame delay set before it will start reacting.
     type = faller_type_for_tile(tile);
-    entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | state | 2);
+    entity = entities_spawn(E_FALLER, tile_x, tile_y, 0, type | state | 3);
     if (state == FALLER_STATE_ROLL_LEFT) {
       entities.flags[entity] |= ENTITYF_FLIPX;
     }
@@ -418,27 +446,30 @@ void level_update() {
 
   // Advance clock.
   if (!(entities.data[entity_player] & PLAYER_DATA_DISABLED)) {
-    --level_clock;
     if (!level_clock) {
       if (!level_info.time_seconds) {
         if (!level_info.time_minutes) {
           player_kill(entity_player, PLAYER_KILL_TIMEOUT);
         } else {
-          level_info.time_seconds = 59;
           --level_info.time_minutes;
+          level_info.time_seconds = 59;
         }
+
       } else {
         --level_info.time_seconds;
-
-        if (level_info.time_minutes == 0 && level_info.time_seconds < 15) {
+        if (level_info.time_minutes == 0 && level_info.time_seconds < 16) {
           sfx_play(SFX_LVL_TIME_OUT, 63, 63, 0x10);
         }
       }
 
       level_clock = LEVEL_SECOND;
       level_hud_update = 1;
+    } else {
+      --level_clock;
     }
   }
+
+  level_animate_tiles();
 
   if (level_hud_update) {
 

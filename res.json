@@ -39,10 +39,20 @@
     "LVL002": {
       "file": "lvl002.tmj",
       "tileset": "LVL",
-      "title": "Demolition"
+      "title": "The Drop"
     },
     "LVL003": {
       "file": "lvl003.tmj",
+      "tileset": "LVL",
+      "title": "Pathways"
+    },
+    "LVL004": {
+      "file": "lvl004.tmj",
+      "tileset": "LVL",
+      "title": "Demolition"
+    },
+    "LVL005": {
+      "file": "lvl005.tmj",
       "tileset": "LVL",
       "title": "Ghost Town"
     }

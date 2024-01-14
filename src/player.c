@@ -35,6 +35,7 @@ void player_init(const unsigned char index) {
 void player_update(const unsigned char index) {
   static unsigned int tile_index;
   static unsigned char map_tile;
+  static unsigned char entity_flags;
 
   x = entities.p_x[index];
   y = entities.p_y[index];
@@ -107,14 +108,15 @@ void player_update(const unsigned char index) {
 
     // Touch nearby tile by pressing A + Direction.
     } else if (input2 & JOY_BTN_A_MASK) {
+      entity_flags = entities.flags[index];
       if (input1_change & JOY_UP_MASK && input1 & JOY_UP_MASK) {
-        level_tile_touch(tile_x, tile_y - 1, entity_types.flags[E_PLAYER], 0, -1);
+        level_tile_touch(tile_x, tile_y - 1, entity_flags, 0, -1);
       } else if (input1_change & JOY_DOWN_MASK && input1 & JOY_DOWN_MASK) {
-        level_tile_touch(tile_x, tile_y + 1, entity_types.flags[E_PLAYER], 0, 1);
+        level_tile_touch(tile_x, tile_y + 1, entity_flags, 0, 1);
       } else if (input1_change & JOY_LEFT_MASK && input1 & JOY_LEFT_MASK) {
-        level_tile_touch(tile_x - 1, tile_y, entity_types.flags[E_PLAYER], -1, 0);
+        level_tile_touch(tile_x - 1, tile_y, entity_flags, -1, 0);
       } else if (input1_change & JOY_RIGHT_MASK && input1 & JOY_RIGHT_MASK) {
-        level_tile_touch(tile_x + 1, tile_y, entity_types.flags[E_PLAYER], 1, 0);
+        level_tile_touch(tile_x + 1, tile_y, entity_flags, 1, 0);
       }
 
     // Drop TNT by pressing B + Direction.
@@ -244,6 +246,11 @@ void player_kill(const unsigned char index, const unsigned char method) {
       sfx = SFX_LVL_DEATH;
       invisible = 1;
       level_tile_start_explosion(tile_x, tile_y);
+      break;
+
+    case PLAYER_KILL_BURN:
+      sfx = SFX_LVL_DEATH;
+      entities_set_state(index, ST_LVL_PLAYER_BURN);
       break;
   }
 

@@ -147,6 +147,16 @@ void entities_set_invisible(const unsigned char entity) {
   VERA.data0 = ret_property_mask;
 }
 
+void entities_set_behind_map(const unsigned char entity) {
+  entities.flags[entity] |= ENTITYF_BEHIND_MAP;
+
+  entity_get_property_mask(entity, entities.state[entity]);
+
+  VERA.address = 0xFC06 + entity * 8;
+  VERA.address_hi = 0x01 | VERA_INC_1;
+  VERA.data0 = ret_property_mask;
+}
+
 void entities_set_state(const unsigned char entity, const unsigned char state) {
   const unsigned char sprite = entity_states.sprite[state];
 
@@ -178,7 +188,11 @@ void entity_get_property_mask(const unsigned char entity, const unsigned char st
     ret_property_mask |= 0b00000010;
   }
   if (!(entity_flags & ENTITYF_INVISIBLE) && !(state_flags & STATEF_INVISIBLE)) {
-    ret_property_mask |= 0b00001000;
+    if (entity_flags & ENTITYF_BEHIND_MAP) {
+      ret_property_mask |= 0b00000100;
+    } else {
+      ret_property_mask |= 0b00001000;
+    }
   }
 }
 

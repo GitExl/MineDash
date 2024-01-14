@@ -20,6 +20,7 @@
 #define PLAYER_KILL_TIMEOUT 0
 #define PLAYER_KILL_CRUSH   1
 #define PLAYER_KILL_MONSTER 2
+#define PLAYER_KILL_BURN    3
 
 typedef struct player_info_t {
   unsigned char entity;

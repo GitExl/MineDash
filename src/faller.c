@@ -29,6 +29,13 @@ static unsigned char tiles[] = {
   T_LVL_DIAMOND,
 };
 
+// Faller hit SFX.
+static unsigned char hit_sfx[] = {
+  SFX_LVL_ROCK_HIT,
+  SFX_LVL_GOLD_HIT,
+  SFX_LVL_GOLD_HIT,
+};
+
 static signed char x;
 static signed char y;
 static signed char state;
@@ -41,7 +48,7 @@ void faller_init(const unsigned char index) {
 
   tile_x = entities.tile_x[index];
   tile_y = entities.tile_y[index];
-  local_type = (entities.data[index] & FALLER_DATA_TYPE) >> 2;
+  local_type = (entities.data[index] & FALLER_DATA_TYPE) >> FALLER_DATA_TYPE_SHIFT;
 
   entities_set_state(index, fall_states[local_type]);
   level_tile_set(TILE_INDEX(tile_x, tile_y), 0);
@@ -61,7 +68,7 @@ void faller_update(const unsigned char index) {
 
   tile_x = entities.tile_x[index];
   tile_y = entities.tile_y[index];
-  local_type = (entities.data[index] & FALLER_DATA_TYPE) >> 2;
+  local_type = (entities.data[index] & FALLER_DATA_TYPE) >> FALLER_DATA_TYPE_SHIFT;
   local_state = entities.data[index] & FALLER_DATA_STATE;
 
   if (delay) {
@@ -74,7 +81,7 @@ void faller_update(const unsigned char index) {
     if (local_state == FALLER_STATE_IDLE && !x && !y) {
       tile_index = TILE_INDEX(tile_x, tile_y);
       state = level_tile_evaluate_gravity(tile_index, GF_ABOVE | GF_LEFT | GF_RIGHT | GF_CRUSH);
-      sfx_index = (local_type == FALLER_TYPE_ROCK) ? SFX_LVL_ROCK_HIT : SFX_LVL_GOLD_HIT;
+      sfx_index = hit_sfx[local_type];
       if (state) {
         local_state = state;
         faller_set_state(index, local_state, local_type);
@@ -123,7 +130,7 @@ void faller_update(const unsigned char index) {
     }
   }
 
-  entities.data[index] = local_state | (local_type << 2) | delay;
+  entities.data[index] = local_state | (local_type << FALLER_DATA_TYPE_SHIFT) | delay;
 }
 
 unsigned char faller_type_for_tile(const unsigned char tile) {
@@ -136,7 +143,7 @@ unsigned char faller_type_for_tile(const unsigned char tile) {
   return FALLER_TYPE_ROCK;
 }
 
-void faller_set_state(const unsigned char index, const unsigned char local_state, const unsigned char local_type) {
-  entities_set_state(index, (local_state == FALLER_STATE_FALL) ? fall_states[local_type] : roll_states[local_type]);
+void faller_set_state(const unsigned char index, const unsigned char local_state, const unsigned char local_type_index) {
+  entities_set_state(index, (local_state == FALLER_STATE_FALL) ? fall_states[local_type_index] : roll_states[local_type_index]);
   entities.flags[index] = (local_state == FALLER_STATE_ROLL_LEFT || local_state == FALLER_STATE_PUSH_LEFT) ? ENTITYF_FLIPX : 0;
 }

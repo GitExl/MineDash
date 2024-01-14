@@ -78,5 +78,6 @@ unsigned char level_tile_push(const unsigned char tile_x, const unsigned char ti
 void level_tile_touch(const unsigned char tile_x, const unsigned char tile_y, const unsigned char entity_type_flags, const signed char move_x, const signed char move_y);
 void level_tile_explode(unsigned char x, unsigned char y);
 void level_tile_start_explosion(unsigned char x, unsigned char y);
+void level_animate_tiles();
 
 #endif

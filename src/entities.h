@@ -9,6 +9,7 @@
 #define ENTITYF_INVISIBLE  0x02   // This entity is not visible.
 #define ENTITYF_FLIPX      0x04   // This entity is flipped on the X axis.
 #define ENTITYF_FLIPY      0x08   // This entity is flipped on the Y axis.
+#define ENTITYF_BEHIND_MAP 0x10   // This entity is rendered behind the map tile layer.
 
 typedef struct entity_t {
   unsigned char type[ENTITY_MAX];
@@ -81,7 +82,8 @@ void entities_set_state(const unsigned char entity, const unsigned char state);
 void entities_free(const unsigned char index);
 unsigned char entities_spawn(const unsigned char type, const unsigned char tile_x, const unsigned char tile_y, const unsigned char flags, const unsigned char data);
 void entities_init_entity(const char index, const char type);
-void entities_set_invisible(const unsigned char index);
+void entities_set_invisible(const unsigned char entity);
+void entities_set_behind_map(const unsigned char entity);
 void entity_get_property_mask(const unsigned char entity, const unsigned char state_index);
 void entities_tile_move(const unsigned char entity, const signed char move_x, const signed char move_y, const unsigned char move_flags);
 void entities_crush(const unsigned char entity);

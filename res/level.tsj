@@ -311,7 +311,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"Pushable",
@@ -328,7 +328,7 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Lava1"
+         "type":"Stone_Vertical"
         }, 
         {
          "id":8,
@@ -351,7 +351,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"Pushable",
@@ -368,7 +368,7 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Lava2"
+         "type":"Stone_CapTop"
         }, 
         {
          "id":9,
@@ -376,12 +376,12 @@
                 {
                  "name":"Block",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Destructible",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Gravity",
@@ -407,7 +407,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"Stone_CapBottom"
         }, 
         {
          "id":10,
@@ -710,7 +711,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"Pushable",
@@ -727,7 +728,7 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Lava3"
+         "type":"Stone_Horizontal"
         }, 
         {
          "id":18,
@@ -750,7 +751,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"Pushable",
@@ -767,7 +768,7 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Lava4"
+         "type":"Stone_CapLeft"
         }, 
         {
          "id":19,
@@ -775,12 +776,12 @@
                 {
                  "name":"Block",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Destructible",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Gravity",
@@ -806,7 +807,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"Stone_CapRight"
         }, 
         {
          "id":20,
@@ -1172,12 +1174,12 @@
                 {
                  "name":"Block",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Destructible",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Gravity",
@@ -1203,7 +1205,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"Stone_Mid"
         }, 
         {
          "id":30,
@@ -1824,7 +1827,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Pushable",
@@ -1840,7 +1843,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"Lava1"
         }, 
         {
          "id":46,
@@ -1863,7 +1867,7 @@
                 {
                  "name":"Lethal",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Pushable",
@@ -1879,7 +1883,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"Lava2"
         }, 
         {
          "id":47,

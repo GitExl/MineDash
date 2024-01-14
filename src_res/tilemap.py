@@ -19,6 +19,7 @@ class EntityFlags:
     INVISIBLE = 0x02
     FLIPX = 0x04
     FLIPY = 0x08
+    BEHIND_MAP = 0x10
 
 
 class Entity:
