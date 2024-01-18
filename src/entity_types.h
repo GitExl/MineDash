@@ -10,5 +10,6 @@
 #define E_DIGGER 4
 #define E_EXIT 5
 #define E_GHOST 6
+#define E_BAT 7
 
 #endif

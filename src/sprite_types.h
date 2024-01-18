@@ -98,5 +98,9 @@
 #define SP_LVL_GHOST_03 92
 #define SP_LVL_GHOST_04 93
 #define SP_LVL_GHOST_05 94
+#define SP_LVL_BAT_00 95
+#define SP_LVL_BAT_01 96
+#define SP_LVL_BAT_02 97
+#define SP_LVL_BAT_03 98
 
 #endif

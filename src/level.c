@@ -28,7 +28,7 @@
 unsigned char level_current = 0;
 
 // Next level to load.
-unsigned char level_next = 2;
+unsigned char level_next = 5;
 
 // Level metadata.
 level_info_t level_info;

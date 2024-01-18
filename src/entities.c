@@ -18,6 +18,7 @@
 #include "faller.h"
 #include "tnt.h"
 #include "ghost.h"
+#include "bat.h"
 
 // Entities.
 entity_t entities;
@@ -303,6 +304,7 @@ void entities_update() {
       case E_FALLER: faller_update(j); break;
       case E_TNT: tnt_update(j); break;
       case E_GHOST: ghost_update(j); break;
+      case E_BAT: bat_update(j); break;
     }
   }
 }
@@ -320,6 +322,7 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
   entity_types.flags[E_TNT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
   entity_types.flags[E_GHOST] = ETF_OWNERSHIP | ETF_CRUSHABLE;
+  entity_types.flags[E_BAT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -338,6 +341,7 @@ void entities_init_entity(const char index, const char type) {
     case E_FALLER: faller_init(index); break;
     case E_TNT: tnt_init(index); break;
     case E_GHOST: ghost_init(index); break;
+    case E_BAT: bat_init(index); break;
   }
 }
 
@@ -371,6 +375,11 @@ void entities_crush(const unsigned char entity) {
         break;
 
       case E_GHOST:
+        level_tile_start_explosion(tile_x, tile_y);
+        entities_free(entity);
+        break;
+
+      case E_BAT:
         level_tile_start_explosion(tile_x, tile_y);
         entities_free(entity);
         break;

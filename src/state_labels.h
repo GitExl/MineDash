@@ -28,5 +28,6 @@
 #define ST_LVL_GHOST_RIGHT 106
 #define ST_LVL_GHOST_UP 108
 #define ST_LVL_GHOST_DOWN 110
+#define ST_LVL_BAT 112
 
 #endif

@@ -65,7 +65,8 @@
     "TNT": 3,
     "Digger": 4,
     "Exit": 5,
-    "Ghost": 6
+    "Ghost": 6,
+    "Bat": 7
   },
 
   "sprite_groups": {
@@ -294,6 +295,18 @@
       "x": 0,
       "y": 192,
       "count": 6,
+      "palette": "MAIN",
+      "groups": ["LVL"]
+    },
+
+    "BAT": {
+      "file": "sprites.png",
+      "bpp": 4,
+      "width": 16,
+      "height": 16,
+      "x": 0,
+      "y": 208,
+      "count": 4,
       "palette": "MAIN",
       "groups": ["LVL"]
     }
