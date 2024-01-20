@@ -18,9 +18,12 @@ const unsigned char DIRECTION_STATES[] = {
 static unsigned char tile_x;
 static unsigned char tile_y;
 static unsigned char dir;
+static unsigned char timer;
+static unsigned char dir_old;
 static unsigned char state;
 static unsigned char flags;
 static unsigned char tile_owner;
+static signed char delta;
 static signed char dir_x = 0;
 static signed char dir_y = 0;
 static unsigned int tile_index;
@@ -28,7 +31,7 @@ static unsigned int tile_index;
 void ghost_init(const unsigned char index) {
   entities_set_state(index, ST_LVL_GHOST_DOWN);
   entities.counter[index] += RANDOM;
-  entities.data[index] = RANDOM >> 6;
+  entities.data[index] = (GHOST_DIR_DOWN >> GHOST_DATA_DIR_SHIFT) | 1;
 }
 
 void ghost_update(const unsigned char index) {
@@ -41,7 +44,33 @@ void ghost_update(const unsigned char index) {
   dir_x = 0;
   dir_y = 0;
 
-  dir = entities.data[index];
+  dir = (entities.data[index] & GHOST_DATA_DIR) >> GHOST_DATA_DIR_SHIFT;
+  dir_old = dir;
+  timer = entities.data[index] & GHOST_DATA_TIMER;
+
+  // Change direction when timer runs out.
+  if (!timer) {
+    timer = (RANDOM & 3) + 1;
+
+    if (dir == GHOST_DIR_UP || dir == GHOST_DIR_DOWN) {
+      delta = entities.tile_x[player.entity] - tile_x;
+      if (delta < 0) {
+        dir = GHOST_DIR_LEFT;
+      } else {
+        dir = GHOST_DIR_RIGHT;
+      }
+    } else if (dir == GHOST_DIR_LEFT || dir == GHOST_DIR_RIGHT) {
+      delta = entities.tile_y[player.entity] - tile_y;
+      if (delta < 0) {
+        dir = GHOST_DIR_UP;
+      } else {
+        dir = GHOST_DIR_DOWN;
+      }
+    }
+  } else {
+    --timer;
+  }
+
   if (dir == GHOST_DIR_UP) {
     dir_y = -1;
   } else if (dir == GHOST_DIR_RIGHT) {
@@ -57,15 +86,13 @@ void ghost_update(const unsigned char index) {
 
   tile_index = TILE_INDEX(tile_x, tile_y);
   tile_owner = map.owner[tile_index];
-  if (map.tile[tile_index] || tile_owner != 0xFF) {
-    dir = (dir + 1) & 3;
-
-    if (tile_owner != 0xFF) {
-      if (entities.type[tile_owner] == E_PLAYER) {
-        player_kill(tile_owner, PLAYER_KILL_MONSTER);
-      }
+  if (tile_owner != 0xFF) {
+    if (entities.type[tile_owner] == E_PLAYER) {
+      player_kill(tile_owner, PLAYER_KILL_MONSTER);
     }
+  }
 
+  if (!map.tile[tile_index] && tile_owner == 0xFF) {
     if (dir == GHOST_DIR_LEFT) {
       flags = ENTITYF_FLIPX;
     } else {
@@ -73,15 +100,17 @@ void ghost_update(const unsigned char index) {
     }
     entities.flags[index] = flags;
 
-    state = DIRECTION_STATES[dir];
-    entities_set_state(index, state);
-
-  } else {
-    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
-    if (!RANDOM) {
-      sfx_play_pan(SFX_LVL_GHOST, 0x10, tile_x, tile_y);
+    if (dir != dir_old) {
+      state = DIRECTION_STATES[dir];
+      entities_set_state(index, state);
     }
+
+    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
   }
 
-  entities.data[index] = dir;
+  if (!RANDOM && !RANDOM) {
+    sfx_play_pan(SFX_LVL_GHOST, 0x08, tile_x, tile_y);
+  }
+
+  entities.data[index] = dir << GHOST_DATA_DIR_SHIFT | timer;
 }

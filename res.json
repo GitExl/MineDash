@@ -54,6 +54,11 @@
     "LVL005": {
       "file": "lvl005.tmj",
       "tileset": "LVL",
+      "title": "Bat Cave"
+    },
+    "LVL006": {
+      "file": "lvl006.tmj",
+      "tileset": "LVL",
       "title": "Ghost Town"
     }
   },

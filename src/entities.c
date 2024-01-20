@@ -248,6 +248,7 @@ void entities_tile_move(const unsigned char entity, const signed char move_x, co
 void entities_update() {
   register unsigned char j;
   static unsigned char state_flags;
+  static unsigned char speed;
 
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
@@ -286,19 +287,20 @@ void entities_update() {
     }
 
     // Always move pixel position towards 0,0.
+    type = entities.type[j];
+    speed = entity_types.flags[type] & ETF_SLOW ? 1 : 2;
     if (entities.p_x[j] < 0) {
-      entities.p_x[j] += 2;
+      entities.p_x[j] += speed;
     } else if (entities.p_x[j] > 0) {
-      entities.p_x[j] -= 2;
+      entities.p_x[j] -= speed;
     }
     if (entities.p_y[j] < 0) {
-      entities.p_y[j] += 2;
+      entities.p_y[j] += speed;
     } else if (entities.p_y[j] > 0) {
-      entities.p_y[j] -= 2;
+      entities.p_y[j] -= speed;
     }
 
     // Run update functions.
-    type = entities.type[j];
     switch (type) {
       case E_PLAYER: player_update(j); break;
       case E_FALLER: faller_update(j); break;
@@ -321,7 +323,7 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_PLAYER] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_DIGS | ETF_SPECIAL;
   entity_types.flags[E_FALLER] = ETF_OWNERSHIP;
   entity_types.flags[E_TNT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
-  entity_types.flags[E_GHOST] = ETF_OWNERSHIP | ETF_CRUSHABLE;
+  entity_types.flags[E_GHOST] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_SLOW;
   entity_types.flags[E_BAT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
 
   for (j = 0; j < ENTITY_MAX; j++) {
@@ -406,8 +408,11 @@ void entities_explode(const unsigned char entity) {
         player_kill(entity, PLAYER_KILL_BURN);
         break;
 
+      case E_GHOST:
+      case E_BAT:
       case E_TNT:
         level_tile_start_explosion(tile_x, tile_y);
+        entities_free(entity);
         break;
     }
 

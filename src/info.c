@@ -1,32 +1,55 @@
 #include "level.h"
 #include "text.h"
 
+static char* info_0[] = {
+  "collect enough gems",
+  "to open the exit.",
+  "beware of falling",
+  "boulders!",
+};
+
+static char* info_1[] = {
+  "",
+  "use \x08A + \x08F to touch",
+  "a nearby tile.",
+  "",
+};
+
+static char* info_4[] = {
+  "press \x08B + \x08F to place",
+  "tnt. it will explode",
+  "very quickly!",
+  "",
+};
+
+static char* info_5[] = {
+  "watch their movement.",
+  "use boulders to kill",
+  "them if needed.",
+  "",
+};
+
 void info_show() {
+  unsigned char i;
+  char** info;
+
   switch (level_current) {
     case 0:
-      text_write(10, 10, 0b10001010, "collect enough gems");
-      text_write(10, 11, 0b10001010, "to open the exit.");
-      text_write(10, 12, 0b10001010, "beware of falling");
-      text_write(10, 13, 0b10001010, "boulders!");
+      info = info_0;
       break;
-
     case 1:
-      text_write(10, 11, 0b10001010, "use \x08A + \x08F to touch");
-      text_write(10, 12, 0b10001010, "a nearby tile.");
+      info = info_1;
       break;
-
     case 4:
-      text_write(10, 10, 0b10001010, "press \x08B + \x08F to place");
-      text_write(10, 11, 0b10001010, "tnt. it will explode");
-      text_write(10, 12, 0b10001010, "very quickly!");
+      info = info_4;
       break;
-
     case 5:
-      text_write(10, 10, 0b10001010, "watch how they move,");
-      text_write(10, 11, 0b10001010, "use boulders to kill");
-      text_write(10, 12, 0b10001010, "them if needed.");
+      info = info_5;
       break;
   }
 
+  for (i = 0; i < 4; i++) {
+    text_write(10, 10 + i, 0b10001010, info[i]);
+  }
   text_write(27, 15, 0b10001001, "\x08C\x08D\x08E");
 }

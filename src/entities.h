@@ -36,6 +36,7 @@ extern entity_t entities;
 #define ETF_CRUSHABLE 0x02
 #define ETF_SPECIAL   0x04
 #define ETF_DIGS      0x08
+#define ETF_SLOW      0x10
 
 typedef struct entity_type_t {
   unsigned char flags[ENTITY_TYPE_MAX];

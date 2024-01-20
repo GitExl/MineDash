@@ -6,5 +6,6 @@ char* level_names[] = {
   "the drop",
   "pathways",
   "demolition",
+  "bat cave",
   "ghost town",
 };
