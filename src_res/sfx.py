@@ -4,7 +4,7 @@ from math import ceil, log
 from typing import Dict, BinaryIO, TextIO
 
 
-SFX_MAX = 16
+SFX_MAX = 24
 
 FREQ_CONV = (48828.125 / (2 ** 17))
 
@@ -16,9 +16,14 @@ class SfxWaveform(Enum):
     NOISE = 3
 
 
+class SfxFlags:
+    RANDOM_PITCH = 0x01
+
+
 class Sfx:
     def __init__(self, name: str, data):
-        self.name = name
+        self.name: str = name
+        self.flags: int = 0
 
         self.waveform: SfxWaveform = SfxWaveform(data['waveform_type'])
         self.pulse_width: int = data['pulse_width']
@@ -33,6 +38,9 @@ class Sfx:
         self.frequency: int = ceil(data['frequency'] / FREQ_CONV)
         self.frequency_sweep_step: int = ceil(abs(data['frequency_sweep_step']) / FREQ_CONV)
         self.frequency_sweep_direction: int = 0 if data['frequency_sweep_step'] < 0 else 1
+
+        if data.get('random_pitch', True):
+            self.flags |= SfxFlags.RANDOM_PITCH
 
         self.volume: int = min(63, ceil(data['volume'] * 63))
 
@@ -78,6 +86,7 @@ class Sfx:
                 pulse_total = -pulse_total
             if self.pulse_width + pulse_total < 0 or self.pulse_width + pulse_total > 63:
                 print('** Warning: SFX {} pulse sweep will probably wrap.'.format(self.name))
+
 
 class SfxList:
 
@@ -158,5 +167,10 @@ class SfxList:
 
         for sfx in self._sfx.values():
             f.write(sb.pack(sfx.volume_decay_step_len))
+        for pad in range(0, SFX_MAX - len(self._sfx)):
+            f.write(b'\x00')
+
+        for sfx in self._sfx.values():
+            f.write(sb.pack(sfx.flags))
         for pad in range(0, SFX_MAX - len(self._sfx)):
             f.write(b'\x00')

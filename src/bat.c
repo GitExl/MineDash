@@ -67,8 +67,8 @@ void bat_update(const unsigned char index) {
 
   } else {
     entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
-    if (!RANDOM && RANDOM & 0b11110000) {
-      sfx_play_pan(SFX_LVL_GHOST, 0x08, tile_x, tile_y);
+    if (!RANDOM && !RANDOM) {
+      sfx_play_pan(SFX_LVL_BAT, 0x04, tile_x, tile_y);
     }
   }
 

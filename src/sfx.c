@@ -143,8 +143,11 @@ void sfx_play(const unsigned char sfx_index, const unsigned char vol_left, const
     return;
   }
 
-  shift = (RANDOM << 1) - 256;
-  frequency = sfx.frequency[sfx_index] + shift;
+  frequency = sfx.frequency[sfx_index];
+  if (sfx.flags[sfx_index] & SFXF_RANDOM_PITCH) {
+    shift = (RANDOM << 1) - 256;
+    frequency += shift;
+  }
 
   sfx_channels.sfx[use] = sfx_index;
   sfx_channels.priority[use] = priority;

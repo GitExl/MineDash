@@ -5,7 +5,9 @@
 #define ASD_STAGE_SUSTAIN 1
 #define ASD_STAGE_DECAY   2
 
-#define SFX_MAX 16
+#define SFXF_RANDOM_PITCH 0x01
+
+#define SFX_MAX 24
 
 // Predefined sound effects.
 typedef struct sfx_t {
@@ -46,6 +48,9 @@ typedef struct sfx_t {
 
   unsigned char volume_decay_step[SFX_MAX];
   unsigned char volume_decay_step_len[SFX_MAX];
+
+  // Flags.
+  unsigned char flags[SFX_MAX];
 } sfx_t;
 
 extern sfx_t sfx;

@@ -8,7 +8,8 @@
     "frequency_sweep_step": -27,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.75,
+    "random_pitch": true
   },
   "CRUSH": {
     "waveform_type": 0,
@@ -19,7 +20,8 @@
     "frequency_sweep_step": -5,
     "pulse_width": 20,
     "pulse_width_sweep_time": 4,
-    "volume": 0.75
+    "volume": 0.75,
+    "random_pitch": true
   },
   "GOLD_HIT": {
     "waveform_type": 1,
@@ -30,7 +32,8 @@
     "frequency_sweep_step": 0,
     "pulse_width": 8,
     "pulse_width_sweep_time": 0,
-    "volume": 0.66
+    "volume": 0.66,
+    "random_pitch": false
   },
   "TIME_OUT": {
     "waveform_type": 2,
@@ -41,7 +44,8 @@
     "frequency_sweep_step": 0,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.75,
+    "random_pitch": false
   },
   "ROCK_HIT": {
     "waveform_type": 3,
@@ -52,7 +56,8 @@
     "frequency_sweep_step": -12,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.66
+    "volume": 0.66,
+    "random_pitch": true
   },
   "GOLD_TAKE": {
     "waveform_type": 0,
@@ -63,7 +68,8 @@
     "frequency_sweep_step": 0,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.75,
+    "random_pitch": true
   },
   "DIG": {
     "waveform_type": 3,
@@ -74,7 +80,8 @@
     "frequency_sweep_step": -46,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.33
+    "volume": 0.33,
+    "random_pitch": true
   },
   "DEATH": {
     "waveform_type": 0,
@@ -85,7 +92,8 @@
     "frequency_sweep_step": -31,
     "pulse_width": 29,
     "pulse_width_sweep_time": 0,
-    "volume": 0.75
+    "volume": 0.75,
+    "random_pitch": true
   },
   "TNT_TICK": {
     "waveform_type": 3,
@@ -96,7 +104,8 @@
     "frequency_sweep_step": -39,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.33
+    "volume": 0.33,
+    "random_pitch": false
   },
   "TNT_TAKE": {
     "waveform_type": 2,
@@ -107,7 +116,8 @@
     "frequency_sweep_step": 7,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.85
+    "volume": 0.85,
+    "random_pitch": true
   },
   "GHOST": {
     "waveform_type": 2,
@@ -118,7 +128,8 @@
     "frequency_sweep_step": -10,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.666
+    "volume": 0.666,
+    "random_pitch": true
   },
   "BIP": {
     "waveform_type": 0,
@@ -129,7 +140,8 @@
     "frequency_sweep_step": 4,
     "pulse_width": 63,
     "pulse_width_sweep_time": -64,
-    "volume": 0.6
+    "volume": 0.6,
+    "random_pitch": true
   },
   "SINK": {
     "waveform_type": 0,
@@ -140,6 +152,19 @@
     "frequency_sweep_step": 48,
     "pulse_width": 63,
     "pulse_width_sweep_time": 0,
-    "volume": 0.5
+    "volume": 0.5,
+    "random_pitch": true
+  },
+  "BAT": {
+    "waveform_type": 2,
+    "volume_attack_len": 1,
+    "volume_sustain_len": 19,
+    "volume_decay_len": 1,
+    "frequency": 4370,
+    "frequency_sweep_step": -17,
+    "pulse_width": 63,
+    "pulse_width_sweep_time": 0,
+    "volume": 0.2,
+    "random_pitch": true
   }
 }

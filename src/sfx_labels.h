@@ -16,5 +16,6 @@
 #define SFX_LVL_GHOST 10
 #define SFX_LVL_BIP 11
 #define SFX_LVL_SINK 12
+#define SFX_LVL_BAT 13
 
 #endif
