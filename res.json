@@ -60,6 +60,16 @@
       "file": "lvl006.tmj",
       "tileset": "LVL",
       "title": "Ghost Town"
+    },
+    "LVL007": {
+      "file": "lvl007.tmj",
+      "tileset": "LVL",
+      "title": "Blast Zone"
+    },
+    "LVL008": {
+      "file": "lvl008.tmj",
+      "tileset": "LVL",
+      "title": "The Wall"
     }
   },
 
