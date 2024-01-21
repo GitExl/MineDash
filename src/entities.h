@@ -76,6 +76,7 @@ extern entity_states_t entity_states;
 
 
 void entities_update_vera_sam();
+void entities_vera_reset();
 void entities_update();
 void entities_load(const char* entity_filename);
 void entities_load_states(const char* states_filename);

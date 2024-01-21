@@ -138,6 +138,17 @@ void entities_update_vera_sam() {
   }
 }
 
+void entities_vera_reset() {
+  register unsigned char j;
+
+  address = 0xFC02 + j * 8 + 6;
+  VERA.address = address;
+  VERA.address_hi = 0x01 | VERA_INC_8;
+  for (j = 0; j < ENTITY_MAX; j++) {
+    VERA.data0 = 0;
+  }
+}
+
 void entities_set_invisible(const unsigned char entity) {
   entities.flags[entity] |= ENTITYF_INVISIBLE;
 
@@ -326,6 +337,8 @@ void entities_load(const char* entity_filename) {
   entity_types.flags[E_GHOST] = ETF_OWNERSHIP | ETF_CRUSHABLE | ETF_SLOW;
   entity_types.flags[E_BAT] = ETF_OWNERSHIP | ETF_CRUSHABLE;
 
+  entities_vera_reset();
+
   for (j = 0; j < ENTITY_MAX; j++) {
     flags = entities.flags[j];
     if (flags & ENTITYF_UNUSED) {
@@ -371,17 +384,9 @@ void entities_crush(const unsigned char entity) {
         player_kill(entity, PLAYER_KILL_CRUSH);
         break;
 
-      case E_TNT:
-        level_tile_start_explosion(tile_x, tile_y);
-        entities_free(entity);
-        break;
-
-      case E_GHOST:
-        level_tile_start_explosion(tile_x, tile_y);
-        entities_free(entity);
-        break;
-
       case E_BAT:
+      case E_GHOST:
+      case E_TNT:
         level_tile_start_explosion(tile_x, tile_y);
         entities_free(entity);
         break;
@@ -402,21 +407,19 @@ void entities_explode(const unsigned char entity) {
   tile_y = entities.tile_y[entity];
 
   type = entities.type[entity];
-  if (entity_types.flags[type] & ETF_CRUSHABLE) {
-    switch (type) {
-      case E_PLAYER:
-        player_kill(entity, PLAYER_KILL_BURN);
-        break;
+  switch (type) {
+    case E_PLAYER:
+      player_kill(entity, PLAYER_KILL_BURN);
+      break;
 
-      case E_GHOST:
-      case E_BAT:
-      case E_TNT:
-        level_tile_start_explosion(tile_x, tile_y);
-        entities_free(entity);
-        break;
-    }
-
-    tile_index = TILE_INDEX(tile_x, tile_y);
-    map.owner[tile_index] = 0xFF;
+    case E_GHOST:
+    case E_BAT:
+    case E_TNT:
+      level_tile_start_explosion(tile_x, tile_y);
+      entities_free(entity);
+      break;
   }
+
+  tile_index = TILE_INDEX(tile_x, tile_y);
+  map.owner[tile_index] = 0xFF;
 }

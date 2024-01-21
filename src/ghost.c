@@ -50,7 +50,7 @@ void ghost_update(const unsigned char index) {
 
   // Change direction when timer runs out.
   if (!timer) {
-    timer = (RANDOM & 3) + 1;
+    timer = (RANDOM & 7) + 1;
 
     if (dir == GHOST_DIR_UP || dir == GHOST_DIR_DOWN) {
       delta = entities.tile_x[player.entity] - tile_x;
@@ -109,7 +109,7 @@ void ghost_update(const unsigned char index) {
   }
 
   if (!RANDOM && !RANDOM) {
-    sfx_play_pan(SFX_LVL_GHOST, 0x08, tile_x, tile_y);
+    sfx_play_pan(SFX_LVL_GHOST, 0x04, tile_x, tile_y);
   }
 
   entities.data[index] = dir << GHOST_DATA_DIR_SHIFT | timer;
