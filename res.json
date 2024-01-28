@@ -59,15 +59,25 @@
     "LVL006": {
       "file": "lvl006.tmj",
       "tileset": "LVL",
-      "title": "Ghost Town"
+      "title": "Spin Cycle"
     },
     "LVL007": {
       "file": "lvl007.tmj",
       "tileset": "LVL",
-      "title": "Blast Zone"
+      "title": "Ghost Town"
     },
     "LVL008": {
       "file": "lvl008.tmj",
+      "tileset": "LVL",
+      "title": "Trackers"
+    },
+    "LVL009": {
+      "file": "lvl009.tmj",
+      "tileset": "LVL",
+      "title": "Blast Zone"
+    },
+    "LVL010": {
+      "file": "lvl010.tmj",
       "tileset": "LVL",
       "title": "The Wall"
     }

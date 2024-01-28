@@ -29,23 +29,23 @@ static char* info_5[] = {
   "",
 };
 
+static char* info_7[] = {
+  "",
+  "  ghosts follow you.",
+  "  don't get caught!",
+  "",
+};
+
 void info_show() {
   unsigned char i;
   char** info;
 
   switch (level_current) {
-    case 0:
-      info = info_0;
-      break;
-    case 1:
-      info = info_1;
-      break;
-    case 4:
-      info = info_4;
-      break;
-    case 5:
-      info = info_5;
-      break;
+    case 0: info = info_0; break;
+    case 1: info = info_1; break;
+    case 4: info = info_4; break;
+    case 5: info = info_5; break;
+    case 7: info = info_7; break;
   }
 
   for (i = 0; i < 4; i++) {
