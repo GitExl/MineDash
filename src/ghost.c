@@ -105,10 +105,10 @@ void ghost_update(const unsigned char index) {
       entities_set_state(index, state);
     }
 
-    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
+    entities_tile_move(index, dir_x, dir_y, 0);
   }
 
-  if (!RANDOM && !RANDOM) {
+  if (!RANDOM && RANDOM & 3) {
     sfx_play_pan(SFX_LVL_GHOST, 0x04, tile_x, tile_y);
   }
 

@@ -66,8 +66,8 @@ void bat_update(const unsigned char index) {
     entities.flags[index] = flags;
 
   } else {
-    entities_tile_move(index, dir_x, dir_y, TILE_MOVE_NO_EVALUATE);
-    if (!RANDOM && !RANDOM) {
+    entities_tile_move(index, dir_x, dir_y, 0);
+    if (!RANDOM && RANDOM & 3) {
       sfx_play_pan(SFX_LVL_BAT, 0x04, tile_x, tile_y);
     }
   }

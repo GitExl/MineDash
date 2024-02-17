@@ -1096,7 +1096,7 @@
                 {
                  "name":"Block",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Destructible",
@@ -1127,7 +1127,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"GateH"
         }, 
         {
          "id":28,
@@ -1135,7 +1136,7 @@
                 {
                  "name":"Block",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"Destructible",
@@ -1166,7 +1167,8 @@
                  "name":"Special",
                  "type":"bool",
                  "value":false
-                }]
+                }],
+         "type":"GateV"
         }, 
         {
          "id":29,
